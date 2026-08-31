@@ -40,16 +40,16 @@ export const ru = {
 
   interestsTooLong: "Слишком длинно — уложитесь в {limit} символов.",
 
-  interestBoard: "Настолки",
   interestBar: "Бар",
   interestRun: "Пробежка",
   interestMovie: "Кино",
   interestExpo: "Выставки",
-  interestCoffee: "Кофе",
   interestBike: "Велосипед",
-  interestBanya: "Баня",
   interestVolley: "Волейбол",
   interestKaraoke: "Караоке",
+  interestTennis: "Теннис",
+  interestPadel: "Падел",
+  interestBilliards: "Бильярд",
 
   availabilityStub:
     "<b>Шаг 2 из 3 · Когда обычно свободны?</b>\n" + "\n" + "Здесь скоро появится недельная сетка.",
@@ -62,7 +62,6 @@ export const ru = {
   buttonPolicy: "Как я храню ваши данные",
 
   alertConsentSaved: "Записал",
-  alertAlreadyRegistered: "Вы уже здесь",
   alertStaleButton: "Кнопка устарела",
 
   communityLost:

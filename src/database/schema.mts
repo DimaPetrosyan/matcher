@@ -14,16 +14,16 @@ import {
 } from "drizzle-orm/pg-core"
 
 export const interestKey = pgEnum("interest_key", [
-  "board",
   "bar",
   "run",
   "movie",
   "expo",
-  "coffee",
   "bike",
-  "banya",
   "volley",
   "karaoke",
+  "tennis",
+  "padel",
+  "billiards",
 ])
 
 export const community = pgTable("community", {

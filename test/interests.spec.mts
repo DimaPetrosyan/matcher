@@ -33,7 +33,8 @@ describe("справочник интересов", () => {
   })
 
   it("isInterestKey отсеивает мусор и снятые значения", () => {
-    expect(isInterestKey("board")).toBe(true)
+    expect(isInterestKey("bar")).toBe(true)
+    expect(isInterestKey("board")).toBe(false)
     expect(isInterestKey("climb")).toBe(false)
     expect(isInterestKey("")).toBe(false)
     expect(isInterestKey("toString")).toBe(false)
@@ -72,10 +73,10 @@ describe("экран интересов", () => {
 
     const buttons = keyboard.inline_keyboard.flat()
     const on = buttons.find(b => b.text === `✓ ${ru("interestBar")}`)
-    const off = buttons.find(b => b.text === ru("interestBoard"))
+    const off = buttons.find(b => b.text === ru("interestRun"))
 
     expect(on).toMatchObject({ callback_data: "i|bar|0" })
-    expect(off).toMatchObject({ callback_data: "i|board|1" })
+    expect(off).toMatchObject({ callback_data: "i|run|1" })
   })
 
   it("кнопки идут по алфавиту подписей, а не в порядке справочника", () => {
@@ -88,7 +89,8 @@ describe("экран интересов", () => {
     const labels = labelsOf(keyboard)
 
     expect(labels).toEqual([...labels].sort((a, b) => a.localeCompare(b, "ru")))
-    expect(labels[0]).toBe(ru("interestBanya"))
+    expect(labels[0]).toBe(ru("interestBar"))
+    expect(labels[1]).toBe(ru("interestBilliards"))
   })
 
   it("в разных языках порядок разный", () => {
@@ -100,8 +102,8 @@ describe("экран интересов", () => {
     )
 
     expect(inRussian.map(l => l)).not.toEqual(inEnglish.map(l => l))
-    expect(inEnglish[0]).toBe(en("interestBanya"))
-    expect(inEnglish[1]).toBe(en("interestBar"))
+    expect(inEnglish[0]).toBe(en("interestBar"))
+    expect(inEnglish[1]).toBe(en("interestBilliards"))
   })
 
   it("строка «Ваш вариант» появляется только при непустом списке", () => {

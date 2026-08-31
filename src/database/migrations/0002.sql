@@ -4,8 +4,8 @@
 
 do $$ begin
     create type interest_key as enum (
-        'board', 'bar', 'run', 'movie', 'expo',
-        'coffee', 'bike', 'banya', 'volley', 'karaoke'
+        'bar', 'run', 'movie', 'expo', 'bike',
+        'volley', 'karaoke', 'tennis', 'padel', 'billiards'
     );
 exception
     when duplicate_object then null;

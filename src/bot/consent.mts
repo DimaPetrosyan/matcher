@@ -44,7 +44,7 @@ export const onConsent = (bot: Bot) => async (ctx: Context) => {
     communityIds: access.memberOf.map(c => c.id),
   })
 
-  await ctx.answerCallbackQuery(isNew ? t("alertConsentSaved") : t("alertAlreadyRegistered"))
+  await ctx.answerCallbackQuery(isNew ? t("alertConsentSaved") : undefined)
 
   await editScreen(ctx, await buildInterestsScreen(userId, ctx.from.language_code))
 

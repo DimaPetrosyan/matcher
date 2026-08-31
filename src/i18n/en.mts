@@ -42,16 +42,16 @@ export const en: Dictionary = {
 
   interestsTooLong: "Too long — keep it under {limit} characters.",
 
-  interestBoard: "Board games",
   interestBar: "Bar",
   interestRun: "Running",
   interestMovie: "Cinema",
   interestExpo: "Exhibitions",
-  interestCoffee: "Coffee",
   interestBike: "Cycling",
-  interestBanya: "Banya",
   interestVolley: "Volleyball",
   interestKaraoke: "Karaoke",
+  interestTennis: "Tennis",
+  interestPadel: "Padel",
+  interestBilliards: "Billiards",
 
   availabilityStub:
     "<b>Step 2 of 3 · When are you usually free?</b>\n" +
@@ -66,7 +66,6 @@ export const en: Dictionary = {
   buttonPolicy: "How I handle your data",
 
   alertConsentSaved: "Saved",
-  alertAlreadyRegistered: "You are already in",
   alertStaleButton: "This button is out of date",
 
   communityLost:
