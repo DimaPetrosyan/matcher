@@ -1,5 +1,9 @@
 import { Bot, GrammyError, HttpError, InlineKeyboard } from "grammy"
-import { registerCommunityFromChat, removeUserFromCommunity } from "../database/index.mts"
+import {
+  deactivateCommunity,
+  registerCommunityFromChat,
+  removeUserFromCommunity,
+} from "../database/index.mts"
 import { env } from "../env.mts"
 import { translatorFor } from "../i18n/index.mts"
 import { actions } from "./screens.mts"
@@ -7,6 +11,7 @@ import { buildDeepLink } from "./deeplink.mts"
 import { isChatMember } from "./membership.mts"
 import { onConnect } from "./connect.mts"
 import { onConsent } from "./consent.mts"
+import { onInterestText, onInterestToggle, onNextFromInterests } from "./interests.mts"
 import { onStart } from "./start.mts"
 
 export const bot = new Bot(env.botToken)
@@ -19,7 +24,10 @@ bot.on("my_chat_member", async ctx => {
   console.log(`bot is now "${member.status}" in ${chat.type} "${chat.title}", chat id: ${chat.id}`)
 
   if (member.status === "left" || member.status === "kicked") {
-    console.warn(`bot removed from chat ${chat.id}: membership checks there will now fail`)
+    const row = await deactivateCommunity(chat.id)
+    console.warn(
+      `bot removed from chat ${chat.id}` + (row ? `, community "${row.title}" deactivated` : ""),
+    )
     return
   }
 
@@ -70,6 +78,9 @@ bot.use(async (ctx, next) => {
 
 bot.command("start", onStart(bot))
 bot.callbackQuery(new RegExp(`^${actions.consent}(\\||$)`), onConsent(bot))
+bot.callbackQuery(new RegExp(`^${actions.interest}\\|`), onInterestToggle)
+bot.callbackQuery(new RegExp(`^${actions.next}\\|`), onNextFromInterests)
+bot.on("message:text", onInterestText)
 
 bot.on("callback_query:data", async ctx => {
   console.warn("unknown callback_data:", ctx.callbackQuery.data)

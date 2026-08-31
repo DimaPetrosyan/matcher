@@ -29,17 +29,53 @@ export const en: Dictionary = {
     "\n" +
     "<i>Nothing gets published. Nothing goes to the group chat.</i>",
 
-  onboardingStub:
+  interestsTitle:
     "<b>Step 1 of 3 · What are you into?</b>\n" +
     "\n" +
-    "A list of activities will show up here soon.",
+    "Mark everything that fits. You can change it later.\n" +
+    "\n" +
+    "<i>Nothing here fits — just type your own.</i>",
+
+  interestsOwn: "<i>Your own: {items}</i>",
+
+  interestsLimit: "Five of your own is plenty. Pick something from the list.",
+
+  interestsTooLong: "Too long — keep it under {limit} characters.",
+
+  interestBar: "Bar",
+  interestRun: "Running",
+  interestMovie: "Cinema",
+  interestExpo: "Exhibitions",
+  interestBike: "Cycling",
+  interestVolley: "Volleyball",
+  interestKaraoke: "Karaoke",
+  interestTennis: "Tennis",
+  interestPadel: "Padel",
+  interestBilliards: "Billiards",
+
+  availabilityStub:
+    "<b>Step 2 of 3 · When are you usually free?</b>\n" +
+    "\n" +
+    "A weekly grid will show up here soon.",
+
+  buttonNext: "Next →",
+
+  alertPickOne: "Pick at least one",
 
   buttonConsent: "Let's go",
   buttonPolicy: "How I handle your data",
 
   alertConsentSaved: "Saved",
-  alertAlreadyRegistered: "You are already in",
   alertStaleButton: "This button is out of date",
+
+  communityLost:
+    '<b>I am no longer in "{community}"</b>\n' +
+    "\n" +
+    "I was removed from the chat, so I can no longer verify who belongs there — " +
+    "and I only let members in.\n" +
+    "\n" +
+    "Ask an admin to add me back and everything will keep working: " +
+    "your answers are still saved.",
 
   unverifiable:
     "I cannot check your community membership right now. Please try again in a few minutes.",

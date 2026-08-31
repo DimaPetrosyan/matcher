@@ -1,14 +1,25 @@
-import type { Bot } from "grammy"
+import { GrammyError, type Bot } from "grammy"
 import type { CommunityRow } from "../database/schema.mts"
 
-export type MembershipResult = "member" | "notMember" | "unverifiable"
+export type MembershipResult = "member" | "notMember" | "noAccess" | "unverifiable"
 
-export type MembershipCheck = { memberOf: CommunityRow[]; unverifiable: boolean }
+export type MembershipCheck = {
+  memberOf: CommunityRow[]
+  lostAccess: CommunityRow[]
+  unverifiable: boolean
+}
 
 const memberStatuses = new Set(["creator", "administrator", "member"])
 
+const noAccessPattern = /chat not found|not a member|was kicked|bot was blocked/i
+
 export const isChatMember = (member: { status: string; is_member?: boolean }) =>
   memberStatuses.has(member.status) || (member.status === "restricted" && member.is_member === true)
+
+export const isAccessLost = (error: unknown) =>
+  error instanceof GrammyError &&
+  !error.parameters?.migrate_to_chat_id &&
+  (error.error_code === 403 || noAccessPattern.test(error.description))
 
 export const checkMembership = async (
   bot: Bot,
@@ -20,6 +31,11 @@ export const checkMembership = async (
 
     return isChatMember(member) ? "member" : "notMember"
   } catch (error) {
+    if (isAccessLost(error)) {
+      console.warn(`no access to chat ${chat.tgChatId} ("${chat.title}"):`, error)
+      return "noAccess"
+    }
+
     console.error(`membership check failed for chat ${chat.tgChatId} ("${chat.title}"):`, error)
     return "unverifiable"
   }
@@ -36,6 +52,7 @@ export const checkAllCommunities = async (
 
   return {
     memberOf: results.filter(r => r.result === "member").map(r => r.community),
+    lostAccess: results.filter(r => r.result === "noAccess").map(r => r.community),
     unverifiable: results.some(r => r.result === "unverifiable"),
   }
 }

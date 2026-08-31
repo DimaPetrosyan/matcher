@@ -2,10 +2,23 @@ export { client, db, type Database } from "./client.mts"
 export { setupDb } from "./setupDb.mts"
 export { recordAudit, type AuditType, type Inserter } from "./audit.mts"
 export {
+  deactivateCommunity,
   findCommunityByChatId,
   listActiveCommunities,
+  listUserCommunities,
   registerCommunityFromChat,
 } from "./community.mts"
+export {
+  addUserSuggestion,
+  findUserByTgId,
+  finishInterests,
+  listActiveInterests,
+  listUserInterestKeys,
+  listUserSuggestions,
+  setUserInterest,
+  setWizardMessage,
+  type InterestKeyValue,
+} from "./interests.mts"
 export {
   recordStart,
   registerUser,
@@ -13,4 +26,15 @@ export {
   type RegisterCommand,
   type UserSource,
 } from "./users.mts"
-export { appUser, auditLog, community, userCommunity, type CommunityRow } from "./schema.mts"
+export {
+  appUser,
+  auditLog,
+  community,
+  interest,
+  interestKey,
+  interestSuggestion,
+  userCommunity,
+  userInterest,
+  type CommunityRow,
+  type InterestRow,
+} from "./schema.mts"
