@@ -4,12 +4,27 @@ import {
   boolean,
   index,
   jsonb,
+  pgEnum,
   pgTable,
   primaryKey,
   text,
   timestamp,
+  unique,
   uuid,
 } from "drizzle-orm/pg-core"
+
+export const interestKey = pgEnum("interest_key", [
+  "board",
+  "bar",
+  "run",
+  "movie",
+  "expo",
+  "coffee",
+  "bike",
+  "banya",
+  "volley",
+  "karaoke",
+])
 
 export const community = pgTable("community", {
   id: uuid("id")
@@ -32,6 +47,8 @@ export const appUser = pgTable("app_user", {
   languageCode: text("language_code"),
   source: text("source").notNull().default("direct"),
   status: text("status").notNull().default("onboarding"),
+  onboardingStep: text("onboarding_step").notNull().default("interests"),
+  wizardMessageId: bigint("wizard_message_id", { mode: "number" }),
   consentAt: timestamp("consent_at", { withTimezone: true }),
   consentVersion: text("consent_version"),
   created: timestamp("created", { withTimezone: true }).notNull().defaultNow(),
@@ -52,6 +69,45 @@ export const userCommunity = pgTable(
   t => [primaryKey({ columns: [t.userId, t.communityId] })],
 )
 
+export const interest = pgTable("interest", {
+  id: uuid("id")
+    .primaryKey()
+    .default(sql`uuidv7()`),
+  key: interestKey("key").notNull().unique(),
+  isActive: boolean("is_active").notNull().default(true),
+  created: timestamp("created", { withTimezone: true }).notNull().defaultNow(),
+  updated: timestamp("updated", { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const userInterest = pgTable(
+  "user_interest",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => appUser.id, { onDelete: "cascade" }),
+    interestId: uuid("interest_id")
+      .notNull()
+      .references(() => interest.id, { onDelete: "cascade" }),
+    created: timestamp("created", { withTimezone: true }).notNull().defaultNow(),
+  },
+  t => [primaryKey({ columns: [t.userId, t.interestId] })],
+)
+
+export const interestSuggestion = pgTable(
+  "interest_suggestion",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .default(sql`uuidv7()`),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => appUser.id, { onDelete: "cascade" }),
+    body: text("body").notNull(),
+    created: timestamp("created", { withTimezone: true }).notNull().defaultNow(),
+  },
+  t => [unique().on(t.userId, t.body)],
+)
+
 export const auditLog = pgTable(
   "audit_log",
   {
@@ -67,3 +123,4 @@ export const auditLog = pgTable(
 )
 
 export type CommunityRow = typeof community.$inferSelect
+export type InterestRow = typeof interest.$inferSelect

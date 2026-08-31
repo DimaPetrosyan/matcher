@@ -7,10 +7,32 @@ export {
   registerCommunityFromChat,
 } from "./community.mts"
 export {
+  addUserSuggestion,
+  findUserByTgId,
+  finishInterests,
+  listActiveInterests,
+  listUserInterestKeys,
+  listUserSuggestions,
+  setUserInterest,
+  setWizardMessage,
+  type InterestKeyValue,
+} from "./interests.mts"
+export {
   recordStart,
   registerUser,
   removeUserFromCommunity,
   type RegisterCommand,
   type UserSource,
 } from "./users.mts"
-export { appUser, auditLog, community, userCommunity, type CommunityRow } from "./schema.mts"
+export {
+  appUser,
+  auditLog,
+  community,
+  interest,
+  interestKey,
+  interestSuggestion,
+  userCommunity,
+  userInterest,
+  type CommunityRow,
+  type InterestRow,
+} from "./schema.mts"

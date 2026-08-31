@@ -7,6 +7,7 @@ import { buildDeepLink } from "./deeplink.mts"
 import { isChatMember } from "./membership.mts"
 import { onConnect } from "./connect.mts"
 import { onConsent } from "./consent.mts"
+import { onInterestText, onInterestToggle, onNextFromInterests } from "./interests.mts"
 import { onStart } from "./start.mts"
 
 export const bot = new Bot(env.botToken)
@@ -70,6 +71,9 @@ bot.use(async (ctx, next) => {
 
 bot.command("start", onStart(bot))
 bot.callbackQuery(new RegExp(`^${actions.consent}(\\||$)`), onConsent(bot))
+bot.callbackQuery(new RegExp(`^${actions.interest}\\|`), onInterestToggle)
+bot.callbackQuery(new RegExp(`^${actions.next}\\|`), onNextFromInterests)
+bot.on("message:text", onInterestText)
 
 bot.on("callback_query:data", async ctx => {
   console.warn("unknown callback_data:", ctx.callbackQuery.data)
