@@ -1,14 +1,9 @@
 import type { Bot, Context } from "grammy"
-import {
-  listActiveCommunities,
-  registerUser,
-  setWizardMessage,
-  type UserSource,
-} from "../database/index.mts"
+import { registerUser, setWizardMessage, type UserSource } from "../database/index.mts"
 import { translatorFor } from "../i18n/index.mts"
-import { checkAllCommunities } from "./membership.mts"
+import { resolveAccess } from "./access.mts"
 import { parseStartPayload } from "./deeplink.mts"
-import { parse, renderDenied } from "./screens.mts"
+import { parse, renderCommunityLost, renderDenied } from "./screens.mts"
 import { buildInterestsScreen, editScreen } from "./wizard.mts"
 
 export const onConsent = (bot: Bot) => async (ctx: Context) => {
@@ -18,12 +13,17 @@ export const onConsent = (bot: Bot) => async (ctx: Context) => {
   const payload = parse(ctx.callbackQuery.data).args[0]
   const source = parseStartPayload(payload)
 
-  const check = await checkAllCommunities(bot, ctx.from.id, await listActiveCommunities())
+  const access = await resolveAccess(bot, ctx.from.id)
 
-  if (check.memberOf.length === 0) {
+  if (access.kind !== "allowed") {
     await ctx.answerCallbackQuery()
 
-    if (check.unverifiable) {
+    if (access.kind === "lost") {
+      await editScreen(ctx, renderCommunityLost(t, access.community))
+      return
+    }
+
+    if (access.kind === "unverifiable") {
       await ctx.reply(t("unverifiable"))
       return
     }
@@ -41,7 +41,7 @@ export const onConsent = (bot: Bot) => async (ctx: Context) => {
     languageCode: ctx.from.language_code,
     source: userSource,
     fromChatId: source.kind === "chat" ? source.tgChatId : undefined,
-    communityIds: check.memberOf.map(c => c.id),
+    communityIds: access.memberOf.map(c => c.id),
   })
 
   await ctx.answerCallbackQuery(isNew ? t("alertConsentSaved") : t("alertAlreadyRegistered"))

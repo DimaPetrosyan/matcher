@@ -1,5 +1,9 @@
 import { Bot, GrammyError, HttpError, InlineKeyboard } from "grammy"
-import { registerCommunityFromChat, removeUserFromCommunity } from "../database/index.mts"
+import {
+  deactivateCommunity,
+  registerCommunityFromChat,
+  removeUserFromCommunity,
+} from "../database/index.mts"
 import { env } from "../env.mts"
 import { translatorFor } from "../i18n/index.mts"
 import { actions } from "./screens.mts"
@@ -20,7 +24,10 @@ bot.on("my_chat_member", async ctx => {
   console.log(`bot is now "${member.status}" in ${chat.type} "${chat.title}", chat id: ${chat.id}`)
 
   if (member.status === "left" || member.status === "kicked") {
-    console.warn(`bot removed from chat ${chat.id}: membership checks there will now fail`)
+    const row = await deactivateCommunity(chat.id)
+    console.warn(
+      `bot removed from chat ${chat.id}` + (row ? `, community "${row.title}" deactivated` : ""),
+    )
     return
   }
 

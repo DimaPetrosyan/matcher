@@ -2,8 +2,10 @@ export { client, db, type Database } from "./client.mts"
 export { setupDb } from "./setupDb.mts"
 export { recordAudit, type AuditType, type Inserter } from "./audit.mts"
 export {
+  deactivateCommunity,
   findCommunityByChatId,
   listActiveCommunities,
+  listUserCommunities,
   registerCommunityFromChat,
 } from "./community.mts"
 export {

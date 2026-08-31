@@ -69,6 +69,15 @@ export const en: Dictionary = {
   alertAlreadyRegistered: "You are already in",
   alertStaleButton: "This button is out of date",
 
+  communityLost:
+    '<b>I am no longer in "{community}"</b>\n' +
+    "\n" +
+    "I was removed from the chat, so I can no longer verify who belongs there — " +
+    "and I only let members in.\n" +
+    "\n" +
+    "Ask an admin to add me back and everything will keep working: " +
+    "your answers are still saved.",
+
   unverifiable:
     "I cannot check your community membership right now. Please try again in a few minutes.",
 

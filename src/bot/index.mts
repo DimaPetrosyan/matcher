@@ -2,7 +2,16 @@ export { bot, startBot } from "./bot.mts"
 
 export { buildDeepLink, parseStartPayload, type StartSource } from "./deeplink.mts"
 
-export { checkAllCommunities, checkMembership, type MembershipResult } from "./membership.mts"
+export { resolveAccess, type Access } from "./access.mts"
+
+export {
+  checkAllCommunities,
+  checkMembership,
+  isAccessLost,
+  isChatMember,
+  type MembershipCheck,
+  type MembershipResult,
+} from "./membership.mts"
 
 export { byLabel, interestTextKey, isInterestKey, type InterestKey } from "./catalog.mts"
 
@@ -15,6 +24,7 @@ export {
   pack,
   parse,
   renderAvailabilityStub,
+  renderCommunityLost,
   renderInterests,
   renderWelcome,
   steps,

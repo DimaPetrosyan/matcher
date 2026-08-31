@@ -38,6 +38,11 @@ export const renderDenied = (t: Translate, communityTitle?: string): Screen => (
   keyboard: new InlineKeyboard(),
 })
 
+export const renderCommunityLost = (t: Translate, community: string): Screen => ({
+  text: t("communityLost", { community }),
+  keyboard: new InlineKeyboard(),
+})
+
 export const renderWelcome = (
   t: Translate,
   opts: { policyUrl: string; communityTitle?: string; payload?: string },
