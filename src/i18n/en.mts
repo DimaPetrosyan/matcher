@@ -56,7 +56,8 @@ export const en: Dictionary = {
   availabilityTitle:
     "<b>Step 2 of 3 · When are you free?</b>\n" +
     "\n" +
-    "Mark when you are usually free. If a particular day does not work out, " +
+    "Mark when you are usually free — a weekday evening or a weekend.\n" +
+    "If a particular day does not work out, " +
     "you can decline when I suggest a meetup.",
 
   slotMon: "Mon",
