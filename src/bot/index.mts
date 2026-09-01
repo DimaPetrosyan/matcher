@@ -15,7 +15,19 @@ export {
 
 export { byLabel, interestTextKey, isInterestKey, type InterestKey } from "./catalog.mts"
 
+export { onBackToInterests, onNextFromAvailability, onSlotToggle } from "./availability.mts"
+
 export { onInterestText, onInterestToggle, onNextFromInterests } from "./interests.mts"
+
+export {
+  isSlotKey,
+  slotByKey,
+  slotKeyOf,
+  slotKeysOf,
+  slots,
+  type Slot,
+  type SlotKey,
+} from "./slots.mts"
 
 export {
   actions,
@@ -23,7 +35,8 @@ export {
   escapeHtml,
   pack,
   parse,
-  renderAvailabilityStub,
+  renderAreaStub,
+  renderAvailability,
   renderCommunityLost,
   renderInterests,
   renderWelcome,

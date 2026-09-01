@@ -1,7 +1,12 @@
 import type { Database } from "./client.mts"
 import { auditLog } from "./schema.mts"
 
-export type AuditType = "start_command" | "consent_given" | "interests_saved" | "interest_suggested"
+export type AuditType =
+  | "start_command"
+  | "consent_given"
+  | "interests_saved"
+  | "interest_suggested"
+  | "availability_saved"
 
 export type Inserter = Pick<Database, "insert">
 

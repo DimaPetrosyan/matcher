@@ -53,14 +53,30 @@ export const en: Dictionary = {
   interestPadel: "Padel",
   interestBilliards: "Billiards",
 
-  availabilityStub:
-    "<b>Step 2 of 3 · When are you usually free?</b>\n" +
+  availabilityTitle:
+    "<b>Step 2 of 3 · When are you free?</b>\n" +
     "\n" +
-    "A weekly grid will show up here soon.",
+    "Mark when you are usually free. If a particular day does not work out, " +
+    "you can decline when I suggest a meetup.",
+
+  slotMon: "Mon",
+  slotTue: "Tue",
+  slotWed: "Wed",
+  slotThu: "Thu",
+  slotFri: "Fri",
+  slotSatDay: "Sat day",
+  slotSatEve: "Sat evening",
+  slotSunDay: "Sun day",
+  slotSunEve: "Sun evening",
+
+  areaStub:
+    "<b>Step 3 of 3 · Which areas work?</b>\n" + "\n" + "A list of areas will show up here soon.",
 
   buttonNext: "Next →",
+  buttonBack: "← Back",
 
   alertPickOne: "Pick at least one",
+  alertPickSlot: "Pick at least one evening",
 
   buttonConsent: "Let's go",
   buttonPolicy: "How I handle your data",

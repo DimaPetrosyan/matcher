@@ -2,12 +2,13 @@ import { InlineKeyboard } from "grammy"
 import type { InlineKeyboardButton } from "grammy/types"
 import type { Locale, Translate } from "../i18n/index.mts"
 import { byLabel, interestTextKey, type InterestKey } from "./catalog.mts"
+import { slots, type Slot, type SlotKey } from "./slots.mts"
 
 export const callbackLimit = 64
 
-export const actions = { consent: "go", interest: "i", next: "n" } as const
+export const actions = { consent: "go", interest: "i", slot: "s", next: "n", back: "b" } as const
 
-export const steps = { interests: "interests", availability: "availability" } as const
+export const steps = { interests: "interests", availability: "availability", area: "area" } as const
 
 export const suggestionLimit = 5
 
@@ -87,7 +88,37 @@ export const renderInterests = (
   return { text: blocks.join("\n\n"), keyboard: new InlineKeyboard(rows) }
 }
 
-export const renderAvailabilityStub = (t: Translate): Screen => ({
-  text: t("availabilityStub"),
+export const renderAvailability = (t: Translate, opts: { selected: SlotKey[] }): Screen => {
+  const selected = new Set<string>(opts.selected)
+
+  const button = (slot: Slot): InlineKeyboardButton => ({
+    text: selected.has(slot.key) ? `✓ ${t(slot.textKey)}` : t(slot.textKey),
+    callback_data: pack(actions.slot, slot.key, selected.has(slot.key) ? "0" : "1"),
+  })
+
+  const weekday = slots.filter(slot => slot.group === "weekday").map(button)
+  const weekend = slots.filter(slot => slot.group === "weekend").map(button)
+
+  const controls: InlineKeyboardButton[] = [
+    { text: t("buttonBack"), callback_data: pack(actions.back, steps.interests) },
+  ]
+
+  if (selected.size > 0) {
+    controls.push({ text: t("buttonNext"), callback_data: pack(actions.next, steps.availability) })
+  }
+
+  const rows = [
+    weekday.slice(0, 3),
+    weekday.slice(3),
+    weekend.slice(0, 2),
+    weekend.slice(2),
+    controls,
+  ]
+
+  return { text: t("availabilityTitle"), keyboard: new InlineKeyboard(rows) }
+}
+
+export const renderAreaStub = (t: Translate): Screen => ({
+  text: t("areaStub"),
   keyboard: new InlineKeyboard(),
 })
