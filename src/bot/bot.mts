@@ -6,10 +6,11 @@ import {
 } from "../database/index.mts"
 import { env } from "../env.mts"
 import { translatorFor } from "../i18n/index.mts"
-import { actions } from "./screens.mts"
+import { actions, steps } from "./screens.mts"
 import { buildDeepLink } from "./deeplink.mts"
 import { isChatMember } from "./membership.mts"
 import { onConnect } from "./connect.mts"
+import { onBackToInterests, onNextFromAvailability, onSlotToggle } from "./availability.mts"
 import { onConsent } from "./consent.mts"
 import { onInterestText, onInterestToggle, onNextFromInterests } from "./interests.mts"
 import { onStart } from "./start.mts"
@@ -79,7 +80,10 @@ bot.use(async (ctx, next) => {
 bot.command("start", onStart(bot))
 bot.callbackQuery(new RegExp(`^${actions.consent}(\\||$)`), onConsent(bot))
 bot.callbackQuery(new RegExp(`^${actions.interest}\\|`), onInterestToggle)
-bot.callbackQuery(new RegExp(`^${actions.next}\\|`), onNextFromInterests)
+bot.callbackQuery(new RegExp(`^${actions.slot}\\|`), onSlotToggle)
+bot.callbackQuery(`${actions.next}|${steps.interests}`, onNextFromInterests)
+bot.callbackQuery(`${actions.next}|${steps.availability}`, onNextFromAvailability)
+bot.callbackQuery(`${actions.back}|${steps.interests}`, onBackToInterests)
 bot.on("message:text", onInterestText)
 
 bot.on("callback_query:data", async ctx => {

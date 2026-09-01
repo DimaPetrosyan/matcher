@@ -51,12 +51,29 @@ export const ru = {
   interestPadel: "Падел",
   interestBilliards: "Бильярд",
 
-  availabilityStub:
-    "<b>Шаг 2 из 3 · Когда обычно свободны?</b>\n" + "\n" + "Здесь скоро появится недельная сетка.",
+  availabilityTitle:
+    "<b>Шаг 2 из 3 · Когда свободны?</b>\n" +
+    "\n" +
+    "Отметьте, когда обычно можете. Если в конкретный день не выйдет — " +
+    "откажетесь, когда предложу встречу.",
+
+  slotMon: "Пн",
+  slotTue: "Вт",
+  slotWed: "Ср",
+  slotThu: "Чт",
+  slotFri: "Пт",
+  slotSatDay: "Сб день",
+  slotSatEve: "Сб вечер",
+  slotSunDay: "Вс день",
+  slotSunEve: "Вс вечер",
+
+  areaStub: "<b>Шаг 3 из 3 · Откуда удобно?</b>\n" + "\n" + "Здесь скоро появится выбор районов.",
 
   buttonNext: "Дальше →",
+  buttonBack: "← Назад",
 
   alertPickOne: "Отметьте хотя бы один пункт",
+  alertPickSlot: "Отметьте хотя бы один вечер",
 
   buttonConsent: "Поехали",
   buttonPolicy: "Как я храню ваши данные",

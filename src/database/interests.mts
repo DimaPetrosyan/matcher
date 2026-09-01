@@ -1,4 +1,5 @@
-import { and, eq, sql } from "drizzle-orm"
+import { and, eq, isNotNull, sql } from "drizzle-orm"
+import { slotTarget } from "./availability.mts"
 import { recordAudit } from "./audit.mts"
 import { db } from "./client.mts"
 import { appUser, interest, interestKey, interestSuggestion, userInterest } from "./schema.mts"
@@ -42,13 +43,31 @@ export const setUserInterest = async (userId: string, key: InterestKeyValue, on:
 
   if (!row) return false
 
-  if (on) {
-    await db.insert(userInterest).values({ userId, interestId: row.id }).onConflictDoNothing()
-  } else {
+  if (!on) {
     await db
       .delete(userInterest)
       .where(and(eq(userInterest.userId, userId), eq(userInterest.interestId, row.id)))
+
+    return true
   }
+
+  await db.transaction(async trx => {
+    const slots = await trx
+      .selectDistinct({
+        recurrence: userInterest.recurrence,
+        startTime: userInterest.startTime,
+        endTime: userInterest.endTime,
+      })
+      .from(userInterest)
+      .where(and(eq(userInterest.userId, userId), isNotNull(userInterest.recurrence)))
+
+    const values =
+      slots.length === 0
+        ? [{ userId, interestId: row.id }]
+        : slots.map(slot => ({ userId, interestId: row.id, ...slot }))
+
+    await trx.insert(userInterest).values(values).onConflictDoNothing({ target: slotTarget })
+  })
 
   return true
 }

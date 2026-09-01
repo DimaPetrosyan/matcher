@@ -4,13 +4,15 @@ import {
   findUserByTgId,
   finishInterests,
   listUserInterestKeys,
+  listUserSlots,
   setUserInterest,
 } from "../database/index.mts"
 import { translatorFor } from "../i18n/index.mts"
 import { isInterestKey } from "./catalog.mts"
+import { slotKeysOf } from "./slots.mts"
 import {
   parse,
-  renderAvailabilityStub,
+  renderAvailability,
   steps,
   suggestionLimit,
   suggestionMaxLength,
@@ -58,7 +60,10 @@ export const onNextFromInterests = async (ctx: Context) => {
   await finishInterests(user.id, keys, steps.availability)
 
   await ctx.answerCallbackQuery()
-  await editScreen(ctx, renderAvailabilityStub(t))
+  await editScreen(
+    ctx,
+    renderAvailability(t, { selected: slotKeysOf(await listUserSlots(user.id)) }),
+  )
 }
 
 export const onInterestText = async (ctx: Context) => {

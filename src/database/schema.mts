@@ -8,8 +8,10 @@ import {
   pgTable,
   primaryKey,
   text,
+  time,
   timestamp,
   unique,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core"
 
@@ -82,15 +84,23 @@ export const interest = pgTable("interest", {
 export const userInterest = pgTable(
   "user_interest",
   {
+    id: uuid("id")
+      .primaryKey()
+      .default(sql`uuidv7()`),
     userId: uuid("user_id")
       .notNull()
       .references(() => appUser.id, { onDelete: "cascade" }),
     interestId: uuid("interest_id")
       .notNull()
       .references(() => interest.id, { onDelete: "cascade" }),
+    recurrence: text("recurrence"),
+    startTime: time("start_time"),
+    endTime: time("end_time"),
     created: timestamp("created", { withTimezone: true }).notNull().defaultNow(),
   },
-  t => [primaryKey({ columns: [t.userId, t.interestId] })],
+  t => [
+    uniqueIndex("user_interest_slot_uidx").on(t.userId, t.interestId, t.recurrence, t.startTime),
+  ],
 )
 
 export const interestSuggestion = pgTable(
