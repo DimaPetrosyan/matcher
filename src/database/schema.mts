@@ -51,6 +51,8 @@ export const appUser = pgTable("app_user", {
   status: text("status").notNull().default("onboarding"),
   onboardingStep: text("onboarding_step").notNull().default("interests"),
   wizardMessageId: bigint("wizard_message_id", { mode: "number" }),
+  district: text("district"),
+  travelRadius: text("travel_radius"),
   consentAt: timestamp("consent_at", { withTimezone: true }),
   consentVersion: text("consent_version"),
   created: timestamp("created", { withTimezone: true }).notNull().defaultNow(),

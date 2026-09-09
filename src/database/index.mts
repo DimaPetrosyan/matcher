@@ -1,5 +1,6 @@
 export { client, db, type Database } from "./client.mts"
 export { setupDb } from "./setupDb.mts"
+export { loadProfile, saveArea, saveInterests, saveSlots, type Profile } from "./profile.mts"
 export { recordAudit, type AuditType, type Inserter } from "./audit.mts"
 export {
   finishAvailability,

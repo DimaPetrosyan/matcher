@@ -68,7 +68,30 @@ export const ru = {
   slotSunDay: "Вс день",
   slotSunEve: "Вс вечер",
 
+  districtNorth: "Север",
+  districtCenter: "Центр",
+  districtSouth: "Юг",
+  districtWest: "Запад",
+  districtEast: "Восток",
+
+  radiusNear: "Только рядом",
+  radiusNearSub: "свой район",
+  radiusThirty: "До 30 минут",
+  radiusThirtySub: "+ соседние",
+  radiusAny: "Куда угодно",
+  radiusAnySub: "весь город",
+
   areaStub: "<b>Шаг 3 из 3 · Откуда удобно?</b>\n" + "\n" + "Здесь скоро появится выбор районов.",
+
+  openMiniApp:
+    "<b>Осталось заполнить анкету</b>\n" +
+    "\n" +
+    "Три коротких шага: что интересно, когда свободны и откуда удобно. " +
+    "Меньше минуты — дальше я ищу совпадения сам.",
+
+  menuButton: "Анкета",
+
+  buttonOpenMiniApp: "Заполнить анкету",
 
   buttonNext: "Дальше →",
   buttonBack: "← Назад",
