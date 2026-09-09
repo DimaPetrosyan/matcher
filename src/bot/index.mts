@@ -5,6 +5,15 @@ export { buildDeepLink, parseStartPayload, type StartSource } from "./deeplink.m
 export { resolveAccess, type Access } from "./access.mts"
 
 export {
+  districts,
+  isDistrictKey,
+  isRadiusKey,
+  radii,
+  type DistrictKey,
+  type RadiusKey,
+} from "./districts.mts"
+
+export {
   checkAllCommunities,
   checkMembership,
   isAccessLost,
@@ -39,6 +48,7 @@ export {
   renderAvailability,
   renderCommunityLost,
   renderInterests,
+  renderOpenMiniApp,
   renderWelcome,
   steps,
   suggestionLimit,

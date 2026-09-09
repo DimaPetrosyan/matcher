@@ -70,8 +70,29 @@ export const en: Dictionary = {
   slotSunDay: "Sun day",
   slotSunEve: "Sun evening",
 
+  districtNorth: "North",
+  districtCenter: "Center",
+  districtSouth: "South",
+  districtWest: "West",
+  districtEast: "East",
+
+  radiusNear: "Nearby only",
+  radiusNearSub: "own district",
+  radiusThirty: "Up to 30 minutes",
+  radiusThirtySub: "+ neighbours",
+  radiusAny: "Anywhere",
+  radiusAnySub: "whole city",
+
   areaStub:
     "<b>Step 3 of 3 · Which areas work?</b>\n" + "\n" + "A list of areas will show up here soon.",
+
+  openMiniApp:
+    "<b>One thing left — your profile</b>\n" +
+    "\n" +
+    "Three short steps: what you are into, when you are free and which areas work. " +
+    "Under a minute — after that I look for overlaps myself.",
+
+  buttonOpenMiniApp: "Fill in the profile",
 
   buttonNext: "Next →",
   buttonBack: "← Back",

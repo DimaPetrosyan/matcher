@@ -1,9 +1,10 @@
 import type { Bot, Context } from "grammy"
 import { registerUser, setWizardMessage, type UserSource } from "../database/index.mts"
+import { env } from "../env.mts"
 import { translatorFor } from "../i18n/index.mts"
 import { resolveAccess } from "./access.mts"
 import { parseStartPayload } from "./deeplink.mts"
-import { parse, renderCommunityLost, renderDenied } from "./screens.mts"
+import { parse, renderCommunityLost, renderDenied, renderOpenMiniApp } from "./screens.mts"
 import { buildInterestsScreen, editScreen } from "./wizard.mts"
 
 export const onConsent = (bot: Bot) => async (ctx: Context) => {
@@ -45,6 +46,11 @@ export const onConsent = (bot: Bot) => async (ctx: Context) => {
   })
 
   await ctx.answerCallbackQuery(isNew ? t("alertConsentSaved") : undefined)
+
+  if (env.webAppUrl) {
+    await editScreen(ctx, renderOpenMiniApp(t, env.webAppUrl))
+    return
+  }
 
   await editScreen(ctx, await buildInterestsScreen(userId, ctx.from.language_code))
 
