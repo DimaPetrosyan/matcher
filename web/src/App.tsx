@@ -16,6 +16,9 @@ type Screen = "interests" | "availability" | "area" | "profile"
 const toggle = (list: string[], key: string) =>
   list.includes(key) ? list.filter(item => item !== key) : [...list, key]
 
+const sameSet = (a: string[], b: string[]) =>
+  a.length === b.length && a.every(item => b.includes(item))
+
 const screenOf = (profile: Profile): Screen =>
   profile.step === "done" ? "profile" : profile.step
 
@@ -25,6 +28,7 @@ export const App = () => {
   const [problem, setProblem] = useState<AccessProblem | null>(null)
   const [screen, setScreen] = useState<Screen>("interests")
   const [interests, setInterests] = useState<string[]>([])
+  const [suggestions, setSuggestions] = useState<string[]>([])
   const [slots, setSlots] = useState<string[]>([])
   const [district, setDistrict] = useState<string | null>(null)
   const [radius, setRadius] = useState<string | null>(null)
@@ -35,6 +39,7 @@ export const App = () => {
   const adopt = useCallback((next: Profile, moveTo?: Screen) => {
     setProfile(next)
     setInterests(next.selected.interests)
+    setSuggestions(next.suggestions)
     setSlots(next.selected.slots)
     setDistrict(next.selected.district)
     setRadius(next.selected.radius)
@@ -97,7 +102,12 @@ export const App = () => {
     }
   }, [screen, problem, back])
 
-  const save = (run: () => Promise<Profile>, moveTo: Screen) => {
+  const save = (run: () => Promise<Profile>, moveTo: Screen, unchanged = false) => {
+    if (unchanged) {
+      setScreen(moveTo)
+      return
+    }
+
     const attempt = async () => {
       setSaving(true)
       setFailed(false)
@@ -158,19 +168,39 @@ export const App = () => {
       ? {
           label: copy.buttons.next,
           kind: saving ? "loading" : interests.length ? "active" : "disabled",
-          onClick: () => save(() => api.saveInterests(interests), "availability"),
+          onClick: () =>
+            save(
+              () => api.saveInterests(interests, suggestions),
+              "availability",
+              profile.step !== "interests" &&
+                sameSet(interests, profile.selected.interests) &&
+                sameSet(suggestions, profile.suggestions),
+            ),
         }
       : screen === "availability"
         ? {
             label: copy.buttons.next,
             kind: saving ? "loading" : slots.length ? "active" : "disabled",
-            onClick: () => save(() => api.saveAvailability(slots), "area"),
+            onClick: () =>
+              save(
+                () => api.saveAvailability(slots),
+                "area",
+                (profile.step === "area" || profile.step === "done") &&
+                  sameSet(slots, profile.selected.slots),
+              ),
           }
         : screen === "area"
           ? {
               label: copy.buttons.done,
               kind: saving ? "loading" : district && radius ? "active" : "disabled",
-              onClick: () => save(() => api.saveArea(district!, radius!), "profile"),
+              onClick: () =>
+                save(
+                  () => api.saveArea(district!, radius!),
+                  "profile",
+                  profile.step === "done" &&
+                    district === profile.selected.district &&
+                    radius === profile.selected.radius,
+                ),
             }
           : {
               label: copy.buttons.close,
@@ -194,11 +224,13 @@ export const App = () => {
           <Interests
             catalog={profile.catalog.interests}
             selected={interests}
-            suggestions={profile.suggestions}
+            suggestions={suggestions}
             limits={profile.limits}
             onToggle={key => setInterests(current => toggle(current, key))}
-            onAdd={body => save(() => api.addSuggestion(body), "interests")}
-            onRemove={body => save(() => api.removeSuggestion(body), "interests")}
+            onAdd={body =>
+              setSuggestions(current => (current.includes(body) ? current : [...current, body]))
+            }
+            onRemove={body => setSuggestions(current => current.filter(item => item !== body))}
           />
         ) : null}
 

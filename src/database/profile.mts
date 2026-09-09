@@ -72,7 +72,12 @@ const spread = (
     ? interestIds.map(interestId => ({ userId, interestId }))
     : interestIds.flatMap(interestId => slots.map(slot => ({ userId, interestId, ...slot })))
 
-export const saveInterests = (userId: string, keys: InterestKeyValue[], step: string) =>
+export const saveInterests = (
+  userId: string,
+  keys: InterestKeyValue[],
+  suggestions: string[],
+  step: string,
+) =>
   db.transaction(async trx => {
     const slots = await trx
       .selectDistinct({
@@ -110,10 +115,19 @@ export const saveInterests = (userId: string, keys: InterestKeyValue[], step: st
       .set({ onboardingStep: step, updated: sql`now()` })
       .where(eq(appUser.id, userId))
 
+    await trx.delete(interestSuggestion).where(eq(interestSuggestion.userId, userId))
+
+    if (suggestions.length > 0) {
+      await trx
+        .insert(interestSuggestion)
+        .values(suggestions.map(body => ({ userId, body })))
+        .onConflictDoNothing()
+    }
+
     await recordAudit(trx, {
       type: "interests_saved",
       userId,
-      payload: { keys, saved: rows.length },
+      payload: { keys, saved: rows.length, suggestions },
     })
 
     return { saved: rows.length }
@@ -159,8 +173,3 @@ export const saveArea = (userId: string, district: string, travelRadius: string,
 
     await recordAudit(trx, { type: "area_saved", userId, payload: { district, travelRadius } })
   })
-
-export const removeSuggestion = (userId: string, body: string) =>
-  db
-    .delete(interestSuggestion)
-    .where(and(eq(interestSuggestion.userId, userId), eq(interestSuggestion.body, body)))

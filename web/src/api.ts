@@ -55,9 +55,8 @@ const request = async (method: string, path: string, payload?: unknown): Promise
 
 export const api = {
   profile: () => request("GET", "/api/profile"),
-  saveInterests: (keys: string[]) => request("PUT", "/api/interests", { keys }),
+  saveInterests: (keys: string[], suggestions: string[]) =>
+    request("PUT", "/api/interests", { keys, suggestions }),
   saveAvailability: (slots: string[]) => request("PUT", "/api/availability", { slots }),
   saveArea: (district: string, radius: string) => request("PUT", "/api/area", { district, radius }),
-  addSuggestion: (body: string) => request("POST", "/api/suggestions", { body }),
-  removeSuggestion: (body: string) => request("DELETE", "/api/suggestions", { body }),
 }

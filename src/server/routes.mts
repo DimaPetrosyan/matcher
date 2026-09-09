@@ -1,10 +1,8 @@
 import type { Bot } from "grammy"
 import {
-  addUserSuggestion,
   findUserByTgId,
   listActiveInterests,
   loadProfile,
-  removeSuggestion,
   saveArea,
   saveInterests,
   saveSlots,
@@ -148,7 +146,16 @@ export const putInterests = async (session: Session, request: Request) => {
   const keys = stringList(payload.keys).filter(isInterestKey)
   if (keys.length === 0) return json({ error: "emptySelection" }, 400)
 
-  await saveInterests(session.userId, keys as InterestKeyValue[], steps.availability)
+  const suggestions = [...new Set(stringList(payload.suggestions).map(item => item.trim()))].filter(
+    item => item.length > 0,
+  )
+
+  if (suggestions.length > suggestionLimit) return json({ error: "atLimit" }, 400)
+  if (suggestions.some(item => item.length > suggestionMaxLength)) {
+    return json({ error: "tooLong" }, 400)
+  }
+
+  await saveInterests(session.userId, keys as InterestKeyValue[], suggestions, steps.availability)
 
   return getProfile(session)
 }
@@ -184,33 +191,6 @@ export const putArea = async (session: Session, request: Request) => {
   return getProfile(session)
 }
 
-export const postSuggestion = async (session: Session, request: Request) => {
-  const payload = await body(request)
-  if (!payload) return json({ error: "badRequest" }, 400)
-
-  const text = typeof payload.body === "string" ? payload.body.trim() : ""
-
-  if (text.length === 0) return json({ error: "empty" }, 400)
-  if (text.length > suggestionMaxLength) return json({ error: "tooLong" }, 400)
-
-  const { atLimit } = await addUserSuggestion(session.userId, text, suggestionLimit)
-  if (atLimit) return json({ error: "atLimit" }, 409)
-
-  return getProfile(session)
-}
-
-export const deleteSuggestion = async (session: Session, request: Request) => {
-  const payload = await body(request)
-  if (!payload) return json({ error: "badRequest" }, 400)
-
-  const text = typeof payload.body === "string" ? payload.body : ""
-  if (!text) return json({ error: "badRequest" }, 400)
-
-  await removeSuggestion(session.userId, text)
-
-  return getProfile(session)
-}
-
 export type Route = {
   method: string
   path: string
@@ -222,8 +202,6 @@ export const routes: Route[] = [
   { method: "PUT", path: "/api/interests", handle: putInterests },
   { method: "PUT", path: "/api/availability", handle: putAvailability },
   { method: "PUT", path: "/api/area", handle: putArea },
-  { method: "POST", path: "/api/suggestions", handle: postSuggestion },
-  { method: "DELETE", path: "/api/suggestions", handle: deleteSuggestion },
 ]
 
 export const notFound = () => json({ error: "notFound" }, 404)
