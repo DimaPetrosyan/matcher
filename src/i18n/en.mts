@@ -92,6 +92,8 @@ export const en: Dictionary = {
     "Three short steps: what you are into, when you are free and which areas work. " +
     "Under a minute — after that I look for overlaps myself.",
 
+  menuButton: "Profile",
+
   buttonOpenMiniApp: "Fill in the profile",
 
   buttonNext: "Next →",
