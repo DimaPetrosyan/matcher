@@ -15,6 +15,16 @@ export type Profile = {
   travelRadius: string | null
 }
 
+const stepRank: Record<string, number> = {
+  interests: 0,
+  availability: 1,
+  area: 2,
+  done: 3,
+}
+
+export const furthestStep = (current: string, next: string) =>
+  (stepRank[current] ?? 0) >= (stepRank[next] ?? 0) ? current : next
+
 export const loadProfile = async (userId: string): Promise<Profile> => {
   const [rows, slots, suggestions, [user]] = await Promise.all([
     db
@@ -110,9 +120,14 @@ export const saveInterests = (
 
     if (values.length > 0) await trx.insert(userInterest).values(values).onConflictDoNothing()
 
+    const [current] = await trx
+      .select({ step: appUser.onboardingStep })
+      .from(appUser)
+      .where(eq(appUser.id, userId))
+
     await trx
       .update(appUser)
-      .set({ onboardingStep: step, updated: sql`now()` })
+      .set({ onboardingStep: furthestStep(current?.step ?? step, step), updated: sql`now()` })
       .where(eq(appUser.id, userId))
 
     await trx.delete(interestSuggestion).where(eq(interestSuggestion.userId, userId))
@@ -150,9 +165,14 @@ export const saveSlots = (userId: string, slots: SlotValue[], step: string) =>
 
     if (values.length > 0) await trx.insert(userInterest).values(values).onConflictDoNothing()
 
+    const [current] = await trx
+      .select({ step: appUser.onboardingStep })
+      .from(appUser)
+      .where(eq(appUser.id, userId))
+
     await trx
       .update(appUser)
-      .set({ onboardingStep: step, updated: sql`now()` })
+      .set({ onboardingStep: furthestStep(current?.step ?? step, step), updated: sql`now()` })
       .where(eq(appUser.id, userId))
 
     await recordAudit(trx, {
