@@ -27,6 +27,15 @@ export const interestKey = pgEnum("interest_key", [
   "billiards",
 ])
 
+export const eventStatus = pgEnum("event_status", ["open", "confirmed", "cancelled"])
+
+export const eventUserStatus = pgEnum("event_user_status", [
+  "invited",
+  "accepted",
+  "declined",
+  "closed",
+])
+
 export const community = pgTable("community", {
   id: uuid("id")
     .primaryKey()
@@ -121,6 +130,45 @@ export const interestSuggestion = pgTable(
   t => [unique().on(t.userId, t.body)],
 )
 
+export const event = pgTable(
+  "event",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .default(sql`uuidv7()`),
+    communityId: uuid("community_id")
+      .notNull()
+      .references(() => community.id, { onDelete: "cascade" }),
+    interestId: uuid("interest_id")
+      .notNull()
+      .references(() => interest.id),
+    startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
+    endsAt: timestamp("ends_at", { withTimezone: true }).notNull(),
+    respondUntil: timestamp("respond_until", { withTimezone: true }).notNull(),
+    status: eventStatus("status").notNull().default("open"),
+    created: timestamp("created", { withTimezone: true }).notNull().defaultNow(),
+    updated: timestamp("updated", { withTimezone: true }).notNull().defaultNow(),
+  },
+  t => [unique().on(t.communityId, t.interestId, t.startsAt)],
+)
+
+export const eventUser = pgTable(
+  "event_user",
+  {
+    eventId: uuid("event_id")
+      .notNull()
+      .references(() => event.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => appUser.id, { onDelete: "cascade" }),
+    status: eventUserStatus("status").notNull().default("invited"),
+    messageId: bigint("message_id", { mode: "number" }),
+    created: timestamp("created", { withTimezone: true }).notNull().defaultNow(),
+    updated: timestamp("updated", { withTimezone: true }).notNull().defaultNow(),
+  },
+  t => [primaryKey({ columns: [t.eventId, t.userId] })],
+)
+
 export const auditLog = pgTable(
   "audit_log",
   {
@@ -137,3 +185,5 @@ export const auditLog = pgTable(
 
 export type CommunityRow = typeof community.$inferSelect
 export type InterestRow = typeof interest.$inferSelect
+export type EventRow = typeof event.$inferSelect
+export type EventUserRow = typeof eventUser.$inferSelect
