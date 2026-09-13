@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test"
-import { readFileSync } from "node:fs"
+import { readdirSync, readFileSync } from "node:fs"
 import { interestKey } from "../src/database/schema.mts"
 import { interestTextKey, isInterestKey, type InterestKey } from "../src/bot/catalog.mts"
 import { callbackLimit, renderInterests } from "../src/bot/screens.mts"
@@ -17,10 +17,18 @@ const labelsOf = (keyboard: { inline_keyboard: { text: string }[][] }) =>
 
 describe("справочник интересов", () => {
   it("перечисление в миграции совпадает со схемой", () => {
-    const sql = readFileSync("src/database/migrations/0002.sql", "utf8")
-    const block = /create type interest_key as enum \(([^)]*)\)/.exec(sql)
+    const dir = "src/database/migrations"
+    const definitions = readdirSync(dir)
+      .filter(name => name.endsWith(".sql"))
+      .sort()
+      .flatMap(name => [
+        ...readFileSync(`${dir}/${name}`, "utf8").matchAll(
+          /create type interest_key(?:_next)? as enum \(([^)]*)\)/g,
+        ),
+      ])
+    const block = definitions.at(-1)
 
-    expect(block).not.toBeNull()
+    expect(block).toBeDefined()
 
     const values = [...block![1]!.matchAll(/'([^']+)'/g)].map(m => m[1]!)
 
@@ -50,7 +58,7 @@ describe("экран интересов", () => {
     })
 
     expect(labelsOf(keyboard)).not.toContain(ru("buttonNext"))
-    expect(keyboard.inline_keyboard).toHaveLength(5)
+    expect(keyboard.inline_keyboard).toHaveLength(4)
   })
 
   it("с одним выбранным ряд «Дальше» появляется ровно один раз", () => {

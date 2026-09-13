@@ -8,11 +8,23 @@ export const callbackLimit = 64
 
 export const actions = { consent: "go", interest: "i", slot: "s", next: "n", back: "b" } as const
 
-export const steps = { interests: "interests", availability: "availability", area: "area" } as const
+export const steps = {
+  interests: "interests",
+  availability: "availability",
+  area: "area",
+  done: "done",
+} as const
+
+export const onboardingFlow: readonly string[] = [steps.interests, steps.availability]
+
+export const nextStepAfter = (step: string) => {
+  const index = onboardingFlow.indexOf(step)
+  return index >= 0 && index < onboardingFlow.length - 1 ? onboardingFlow[index + 1]! : steps.done
+}
 
 export const suggestionLimit = 5
 
-export const suggestionMaxLength = 64
+export const suggestionMaxLength = 40
 
 export const pack = (action: string, ...args: string[]) => {
   const data = [action, ...args].join("|")
@@ -117,6 +129,16 @@ export const renderAvailability = (t: Translate, opts: { selected: SlotKey[] }):
 
   return { text: t("availabilityTitle"), keyboard: new InlineKeyboard(rows) }
 }
+
+export const renderOpenMiniApp = (t: Translate, url: string): Screen => ({
+  text: t("openMiniApp"),
+  keyboard: new InlineKeyboard().webApp(t("buttonOpenMiniApp"), url),
+})
+
+export const renderProfileReady = (t: Translate, url?: string): Screen => ({
+  text: t("profileReady"),
+  keyboard: url ? new InlineKeyboard().webApp(t("buttonEditProfile"), url) : new InlineKeyboard(),
+})
 
 export const renderAreaStub = (t: Translate): Screen => ({
   text: t("areaStub"),

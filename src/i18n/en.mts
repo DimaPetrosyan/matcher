@@ -17,7 +17,7 @@ export const en: Dictionary = {
     "<b>Hi. I find people from your community to go out with</b>\n" +
     "\n" +
     "Mark once what you are into and when you are usually free. " +
-    "After that I will suggest a specific meetup — activity, day, area.\n" +
+    "After that I will suggest a specific meetup — activity and day.\n" +
     "\n" +
     "<i>Nothing gets published. Nothing goes to the group chat.</i>",
 
@@ -25,12 +25,12 @@ export const en: Dictionary = {
     '<b>Hi. I find people from "{community}" to go out with</b>\n' +
     "\n" +
     "Mark once what you are into and when you are usually free. " +
-    "After that I will suggest a specific meetup — activity, day, area.\n" +
+    "After that I will suggest a specific meetup — activity and day.\n" +
     "\n" +
     "<i>Nothing gets published. Nothing goes to the group chat.</i>",
 
   interestsTitle:
-    "<b>Step 1 of 3 · What are you into?</b>\n" +
+    "<b>Step 1 of 2 · What are you into?</b>\n" +
     "\n" +
     "Mark everything that fits. You can change it later.\n" +
     "\n" +
@@ -47,14 +47,12 @@ export const en: Dictionary = {
   interestMovie: "Cinema",
   interestExpo: "Exhibitions",
   interestBike: "Cycling",
-  interestVolley: "Volleyball",
   interestKaraoke: "Karaoke",
   interestTennis: "Tennis",
-  interestPadel: "Padel",
   interestBilliards: "Billiards",
 
   availabilityTitle:
-    "<b>Step 2 of 3 · When are you free?</b>\n" +
+    "<b>Step 2 of 2 · When are you free?</b>\n" +
     "\n" +
     "Mark when you are usually free — a weekday evening or a weekend.\n" +
     "If a particular day does not work out, " +
@@ -70,8 +68,41 @@ export const en: Dictionary = {
   slotSunDay: "Sun day",
   slotSunEve: "Sun evening",
 
+  districtNorth: "North",
+  districtCenter: "Center",
+  districtSouth: "South",
+  districtWest: "West",
+  districtEast: "East",
+
+  radiusNear: "Nearby only",
+  radiusNearSub: "own district",
+  radiusThirty: "Up to 30 minutes",
+  radiusThirtySub: "+ neighbours",
+  radiusAny: "Anywhere",
+  radiusAnySub: "whole city",
+
   areaStub:
     "<b>Step 3 of 3 · Which areas work?</b>\n" + "\n" + "A list of areas will show up here soon.",
+
+  openMiniApp:
+    "<b>One thing left — your profile</b>\n" +
+    "\n" +
+    "Two short steps: what you are into and when you are usually free. " +
+    "Under a minute — after that I look for overlaps myself.",
+
+  profileReady:
+    "<b>Profile complete</b>\n" +
+    "\n" +
+    "When I find someone to go out with, I will send the invitation here, to this chat.\n" +
+    "\n" +
+    "<i>You can change your interests and free time any moment — with the button below " +
+    'or "Profile" next to the input field.</i>',
+
+  buttonEditProfile: "Edit profile",
+
+  menuButton: "Profile",
+
+  buttonOpenMiniApp: "Fill in the profile",
 
   buttonNext: "Next →",
   buttonBack: "← Back",
@@ -101,8 +132,8 @@ export const en: Dictionary = {
     "<b>Hi! I help members of this chat go out together</b>\n" +
     "\n" +
     "People mark once in a private chat with me what they are into and when they are usually " +
-    "free. After that I look for overlaps myself and suggest a specific meetup — activity, day, " +
-    "area. Nobody has to post anything or ask anyone.\n" +
+    "free. After that I look for overlaps myself and suggest a specific meetup — activity " +
+    "and day. Nobody has to post anything or ask anyone.\n" +
     "\n" +
     "<b>To make me work, promote me to administrator.</b>\n" +
     "No permissions needed — the status itself is what matters: without it Telegram will not let " +
@@ -113,7 +144,7 @@ export const en: Dictionary = {
   groupReady:
     "<b>All set, I am live</b>\n" +
     "\n" +
-    "Tap “Get started” — I will ask about your interests and free evenings. Three screens, under " +
+    "Tap “Get started” — I will ask about your interests and free evenings. Two screens, under " +
     "a minute. After that I will suggest a meetup once there are overlaps.\n" +
     "\n" +
     "<i>Only for members of this chat.</i>",

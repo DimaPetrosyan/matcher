@@ -4,6 +4,17 @@ export { buildDeepLink, parseStartPayload, type StartSource } from "./deeplink.m
 
 export { resolveAccess, type Access } from "./access.mts"
 
+export { announceProfileReady } from "./profileReady.mts"
+
+export {
+  districts,
+  isDistrictKey,
+  isRadiusKey,
+  radii,
+  type DistrictKey,
+  type RadiusKey,
+} from "./districts.mts"
+
 export {
   checkAllCommunities,
   checkMembership,
@@ -33,12 +44,16 @@ export {
   actions,
   callbackLimit,
   escapeHtml,
+  nextStepAfter,
+  onboardingFlow,
   pack,
   parse,
   renderAreaStub,
   renderAvailability,
   renderCommunityLost,
   renderInterests,
+  renderOpenMiniApp,
+  renderProfileReady,
   renderWelcome,
   steps,
   suggestionLimit,

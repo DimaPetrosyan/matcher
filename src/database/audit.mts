@@ -7,6 +7,7 @@ export type AuditType =
   | "interests_saved"
   | "interest_suggested"
   | "availability_saved"
+  | "area_saved"
 
 export type Inserter = Pick<Database, "insert">
 

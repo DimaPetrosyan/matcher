@@ -6,3 +6,4 @@ matcher
 # Список переменных — в README.
 .env
 .env.*
+*.tsbuildinfo

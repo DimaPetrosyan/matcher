@@ -11,7 +11,10 @@
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "format": "prettier --write \"src/**/*.mts\" \"test/**/*.mts\"",
-    "db:pull": "bunx drizzle-kit pull && mv src/database/schema.ts src/database/schema.mts"
+    "db:pull": "bunx drizzle-kit pull && mv src/database/schema.ts src/database/schema.mts",
+    "web:dev": "bun run --cwd web dev",
+    "web:build": "bun run --cwd web build",
+    "web:typecheck": "bun run --cwd web typecheck"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",

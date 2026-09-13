@@ -7,6 +7,7 @@ import {
   pgEnum,
   pgTable,
   primaryKey,
+  smallint,
   text,
   time,
   timestamp,
@@ -21,10 +22,8 @@ export const interestKey = pgEnum("interest_key", [
   "movie",
   "expo",
   "bike",
-  "volley",
   "karaoke",
   "tennis",
-  "padel",
   "billiards",
 ])
 
@@ -51,6 +50,8 @@ export const appUser = pgTable("app_user", {
   status: text("status").notNull().default("onboarding"),
   onboardingStep: text("onboarding_step").notNull().default("interests"),
   wizardMessageId: bigint("wizard_message_id", { mode: "number" }),
+  district: text("district"),
+  travelRadius: text("travel_radius"),
   consentAt: timestamp("consent_at", { withTimezone: true }),
   consentVersion: text("consent_version"),
   created: timestamp("created", { withTimezone: true }).notNull().defaultNow(),
@@ -76,6 +77,8 @@ export const interest = pgTable("interest", {
     .primaryKey()
     .default(sql`uuidv7()`),
   key: interestKey("key").notNull().unique(),
+  minSize: smallint("min_size").notNull().default(2),
+  maxSize: smallint("max_size").notNull().default(4),
   isActive: boolean("is_active").notNull().default(true),
   created: timestamp("created", { withTimezone: true }).notNull().defaultNow(),
   updated: timestamp("updated", { withTimezone: true }).notNull().defaultNow(),

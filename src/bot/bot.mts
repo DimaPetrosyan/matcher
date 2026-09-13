@@ -103,8 +103,28 @@ bot.catch(async err => {
   } catch {}
 })
 
+const setupMenuButton = async () => {
+  if (!env.webAppUrl) return
+
+  try {
+    await bot.api.setChatMenuButton({
+      menu_button: {
+        type: "web_app",
+        text: translatorFor("ru")("menuButton"),
+        web_app: { url: env.webAppUrl },
+      },
+    })
+
+    console.log(`menu button points at ${env.webAppUrl}`)
+  } catch (error) {
+    console.error("could not set the menu button:", error)
+  }
+}
+
 export const startBot = async () => {
   await bot.init()
+
+  await setupMenuButton()
 
   void bot.start({
     allowed_updates: ["message", "callback_query", "my_chat_member", "chat_member"],
