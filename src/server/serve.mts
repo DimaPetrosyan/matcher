@@ -38,7 +38,7 @@ export const startServer = (bot: Bot) => {
       if ("error" in result) return result.error
 
       try {
-        return await route.handle(result.session, request)
+        return await route.handle(result.session, request, bot)
       } catch (error) {
         console.error(`request failed: ${request.method} ${pathname}`, error)
         return new Response(JSON.stringify({ error: "internal" }), {

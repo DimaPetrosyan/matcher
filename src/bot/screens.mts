@@ -135,6 +135,11 @@ export const renderOpenMiniApp = (t: Translate, url: string): Screen => ({
   keyboard: new InlineKeyboard().webApp(t("buttonOpenMiniApp"), url),
 })
 
+export const renderProfileReady = (t: Translate, url?: string): Screen => ({
+  text: t("profileReady"),
+  keyboard: url ? new InlineKeyboard().webApp(t("buttonEditProfile"), url) : new InlineKeyboard(),
+})
+
 export const renderAreaStub = (t: Translate): Screen => ({
   text: t("areaStub"),
   keyboard: new InlineKeyboard(),

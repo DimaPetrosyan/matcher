@@ -7,7 +7,8 @@ import {
   setUserSlot,
 } from "../database/index.mts"
 import { translatorFor } from "../i18n/index.mts"
-import { parse, renderAreaStub, renderAvailability, steps } from "./screens.mts"
+import { env } from "../env.mts"
+import { nextStepAfter, parse, renderAvailability, renderProfileReady, steps } from "./screens.mts"
 import { isSlotKey, slotByKey, slotKeysOf } from "./slots.mts"
 import { buildInterestsScreen, editScreen } from "./wizard.mts"
 
@@ -57,10 +58,10 @@ export const onNextFromAvailability = async (ctx: Context) => {
     return
   }
 
-  await finishAvailability(user.id, selected, steps.area)
+  await finishAvailability(user.id, selected, nextStepAfter("availability"))
 
   await ctx.answerCallbackQuery()
-  await editScreen(ctx, renderAreaStub(t))
+  await editScreen(ctx, renderProfileReady(t, env.webAppUrl))
 }
 
 export const onBackToInterests = async (ctx: Context) => {

@@ -9,6 +9,7 @@ import {
   type InterestKeyValue,
 } from "../database/index.mts"
 import {
+  announceProfileReady,
   byLabel,
   districts,
   interestTextKey,
@@ -80,6 +81,14 @@ export const authorize = async (
   }
 }
 
+const announceIfCompleted = (bot: Bot, session: Session, completed: boolean) => {
+  if (!completed) return
+
+  void announceProfileReady(bot, session.tgId, session.languageCode).catch(error =>
+    console.error(`could not announce completed profile for ${session.tgId}:`, error),
+  )
+}
+
 const catalogFor = async (languageCode?: string) => {
   const t = translatorFor(languageCode)
   const locale = resolveLocale(languageCode)
@@ -141,7 +150,7 @@ const body = async (request: Request): Promise<Record<string, unknown> | null> =
 const stringList = (value: unknown): string[] =>
   Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : []
 
-export const putInterests = async (session: Session, request: Request) => {
+export const putInterests = async (session: Session, request: Request, bot: Bot) => {
   const payload = await body(request)
   if (!payload) return json({ error: "badRequest" }, 400)
 
@@ -157,17 +166,19 @@ export const putInterests = async (session: Session, request: Request) => {
     return json({ error: "tooLong" }, 400)
   }
 
-  await saveInterests(
+  const { completed } = await saveInterests(
     session.userId,
     keys as InterestKeyValue[],
     suggestions,
     nextStepAfter("interests"),
   )
 
+  announceIfCompleted(bot, session, completed)
+
   return getProfile(session)
 }
 
-export const putAvailability = async (session: Session, request: Request) => {
+export const putAvailability = async (session: Session, request: Request, bot: Bot) => {
   const payload = await body(request)
   if (!payload) return json({ error: "badRequest" }, 400)
 
@@ -179,12 +190,14 @@ export const putAvailability = async (session: Session, request: Request) => {
     return { recurrence, startTime, endTime }
   })
 
-  await saveSlots(session.userId, chosen, nextStepAfter("availability"))
+  const { completed } = await saveSlots(session.userId, chosen, nextStepAfter("availability"))
+
+  announceIfCompleted(bot, session, completed)
 
   return getProfile(session)
 }
 
-export const putArea = async (session: Session, request: Request) => {
+export const putArea = async (session: Session, request: Request, bot: Bot) => {
   const payload = await body(request)
   if (!payload) return json({ error: "badRequest" }, 400)
 
@@ -193,7 +206,9 @@ export const putArea = async (session: Session, request: Request) => {
 
   if (!isDistrictKey(district) || !isRadiusKey(radius)) return json({ error: "badRequest" }, 400)
 
-  await saveArea(session.userId, district, radius, nextStepAfter("area"))
+  const { completed } = await saveArea(session.userId, district, radius, nextStepAfter("area"))
+
+  announceIfCompleted(bot, session, completed)
 
   return getProfile(session)
 }
@@ -201,7 +216,7 @@ export const putArea = async (session: Session, request: Request) => {
 export type Route = {
   method: string
   path: string
-  handle: (session: Session, request: Request) => Promise<Response>
+  handle: (session: Session, request: Request, bot: Bot) => Promise<Response>
 }
 
 export const routes: Route[] = [

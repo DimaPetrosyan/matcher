@@ -4,6 +4,8 @@ export { buildDeepLink, parseStartPayload, type StartSource } from "./deeplink.m
 
 export { resolveAccess, type Access } from "./access.mts"
 
+export { announceProfileReady } from "./profileReady.mts"
+
 export {
   districts,
   isDistrictKey,
@@ -51,6 +53,7 @@ export {
   renderCommunityLost,
   renderInterests,
   renderOpenMiniApp,
+  renderProfileReady,
   renderWelcome,
   steps,
   suggestionLimit,

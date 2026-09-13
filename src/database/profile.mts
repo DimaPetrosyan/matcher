@@ -140,6 +140,8 @@ export const saveInterests = (
 
     if (reached === "done") await activate(trx, userId)
 
+    const completed = reached === "done" && current?.step !== "done"
+
     await trx.delete(interestSuggestion).where(eq(interestSuggestion.userId, userId))
 
     if (suggestions.length > 0) {
@@ -155,7 +157,7 @@ export const saveInterests = (
       payload: { keys, saved: rows.length, suggestions },
     })
 
-    return { saved: rows.length }
+    return { saved: rows.length, completed }
   })
 
 export const saveSlots = (userId: string, slots: SlotValue[], step: string) =>
@@ -189,17 +191,24 @@ export const saveSlots = (userId: string, slots: SlotValue[], step: string) =>
 
     if (reached === "done") await activate(trx, userId)
 
+    const completed = reached === "done" && current?.step !== "done"
+
     await recordAudit(trx, {
       type: "availability_saved",
       userId,
       payload: { slots: slots.map(slot => `${slot.recurrence}@${slot.startTime}`) },
     })
 
-    return { saved: values.length }
+    return { saved: values.length, completed }
   })
 
 export const saveArea = (userId: string, district: string, travelRadius: string, step: string) =>
   db.transaction(async trx => {
+    const [current] = await trx
+      .select({ step: appUser.onboardingStep })
+      .from(appUser)
+      .where(eq(appUser.id, userId))
+
     await trx
       .update(appUser)
       .set({ district, travelRadius, onboardingStep: step, updated: sql`now()` })
@@ -208,4 +217,6 @@ export const saveArea = (userId: string, district: string, travelRadius: string,
     if (step === "done") await activate(trx, userId)
 
     await recordAudit(trx, { type: "area_saved", userId, payload: { district, travelRadius } })
+
+    return { completed: step === "done" && current?.step !== "done" }
   })

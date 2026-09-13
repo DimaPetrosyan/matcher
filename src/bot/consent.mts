@@ -47,13 +47,13 @@ export const onConsent = (bot: Bot) => async (ctx: Context) => {
 
   await ctx.answerCallbackQuery(isNew ? t("alertConsentSaved") : undefined)
 
+  const messageId = ctx.callbackQuery.message?.message_id
+  if (messageId) await setWizardMessage(userId, messageId)
+
   if (env.webAppUrl) {
     await editScreen(ctx, renderOpenMiniApp(t, env.webAppUrl))
     return
   }
 
   await editScreen(ctx, await buildInterestsScreen(userId, ctx.from.language_code))
-
-  const messageId = ctx.callbackQuery.message?.message_id
-  if (messageId) await setWizardMessage(userId, messageId)
 }
