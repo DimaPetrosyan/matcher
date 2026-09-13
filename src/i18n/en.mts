@@ -47,10 +47,8 @@ export const en: Dictionary = {
   interestMovie: "Cinema",
   interestExpo: "Exhibitions",
   interestBike: "Cycling",
-  interestVolley: "Volleyball",
   interestKaraoke: "Karaoke",
   interestTennis: "Tennis",
-  interestPadel: "Padel",
   interestBilliards: "Billiards",
 
   availabilityTitle:

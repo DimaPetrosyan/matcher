@@ -9,10 +9,8 @@ export const interestTextKey: Record<InterestKey, TextKey> = {
   movie: "interestMovie",
   expo: "interestExpo",
   bike: "interestBike",
-  volley: "interestVolley",
   karaoke: "interestKaraoke",
   tennis: "interestTennis",
-  padel: "interestPadel",
   billiards: "interestBilliards",
 }
 

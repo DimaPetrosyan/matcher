@@ -45,10 +45,8 @@ export const ru = {
   interestMovie: "Кино",
   interestExpo: "Выставки",
   interestBike: "Велосипед",
-  interestVolley: "Волейбол",
   interestKaraoke: "Караоке",
   interestTennis: "Теннис",
-  interestPadel: "Падел",
   interestBilliards: "Бильярд",
 
   availabilityTitle:
