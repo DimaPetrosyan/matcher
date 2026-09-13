@@ -3,7 +3,12 @@ import { copy } from "../copy"
 import { haptic } from "../telegram"
 import type { SlotItem } from "../types"
 
-type Props = { catalog: SlotItem[]; selected: string[]; onToggle: (key: string) => void }
+type Props = {
+  stepLabel: string
+  catalog: SlotItem[]
+  selected: string[]
+  onToggle: (key: string) => void
+}
 
 const split = (label: string) => {
   const space = label.indexOf(" ")
@@ -40,7 +45,8 @@ const Cell = ({
   )
 }
 
-export const Availability = ({ catalog, selected, onToggle }: Props) => {
+export const Availability = ({
+  stepLabel, catalog, selected, onToggle }: Props) => {
   const weekday = catalog.filter(slot => slot.group === "weekday")
   const weekend = catalog.filter(slot => slot.group === "weekend")
 
@@ -58,7 +64,7 @@ export const Availability = ({ catalog, selected, onToggle }: Props) => {
 
   return (
     <>
-      <StepHead {...copy.steps.availability} />
+      <StepHead label={stepLabel} {...copy.steps.availability} />
 
       <div className="group-title">{copy.groups.weekday}</div>
       <div className="days weekday">{weekday.map(cell)}</div>

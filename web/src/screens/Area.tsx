@@ -5,6 +5,7 @@ import { haptic } from "../telegram"
 import type { InterestItem, RadiusItem } from "../types"
 
 type Props = {
+  stepLabel: string
   districts: InterestItem[]
   radii: RadiusItem[]
   district: string | null
@@ -13,9 +14,10 @@ type Props = {
   onRadius: (key: string) => void
 }
 
-export const Area = ({ districts, radii, district, radius, onDistrict, onRadius }: Props) => (
+export const Area = ({
+  stepLabel, districts, radii, district, radius, onDistrict, onRadius }: Props) => (
   <>
-    <StepHead {...copy.steps.area} />
+    <StepHead label={stepLabel} {...copy.steps.area} />
 
     <div className="group-title" style={{ margin: "0 0 4px" }}>
       {copy.groups.district}

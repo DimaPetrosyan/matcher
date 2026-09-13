@@ -25,6 +25,12 @@ const stepRank: Record<string, number> = {
 export const furthestStep = (current: string, next: string) =>
   (stepRank[current] ?? 0) >= (stepRank[next] ?? 0) ? current : next
 
+const activate = (trx: Pick<typeof db, "update">, userId: string) =>
+  trx
+    .update(appUser)
+    .set({ status: "active", updated: sql`now()` })
+    .where(and(eq(appUser.id, userId), eq(appUser.status, "onboarding")))
+
 export const loadProfile = async (userId: string): Promise<Profile> => {
   const [rows, slots, suggestions, [user]] = await Promise.all([
     db
@@ -125,10 +131,14 @@ export const saveInterests = (
       .from(appUser)
       .where(eq(appUser.id, userId))
 
+    const reached = furthestStep(current?.step ?? step, step)
+
     await trx
       .update(appUser)
-      .set({ onboardingStep: furthestStep(current?.step ?? step, step), updated: sql`now()` })
+      .set({ onboardingStep: reached, updated: sql`now()` })
       .where(eq(appUser.id, userId))
+
+    if (reached === "done") await activate(trx, userId)
 
     await trx.delete(interestSuggestion).where(eq(interestSuggestion.userId, userId))
 
@@ -170,10 +180,14 @@ export const saveSlots = (userId: string, slots: SlotValue[], step: string) =>
       .from(appUser)
       .where(eq(appUser.id, userId))
 
+    const reached = furthestStep(current?.step ?? step, step)
+
     await trx
       .update(appUser)
-      .set({ onboardingStep: furthestStep(current?.step ?? step, step), updated: sql`now()` })
+      .set({ onboardingStep: reached, updated: sql`now()` })
       .where(eq(appUser.id, userId))
+
+    if (reached === "done") await activate(trx, userId)
 
     await recordAudit(trx, {
       type: "availability_saved",
@@ -188,8 +202,10 @@ export const saveArea = (userId: string, district: string, travelRadius: string,
   db.transaction(async trx => {
     await trx
       .update(appUser)
-      .set({ district, travelRadius, onboardingStep: step, status: "active", updated: sql`now()` })
+      .set({ district, travelRadius, onboardingStep: step, updated: sql`now()` })
       .where(eq(appUser.id, userId))
+
+    if (step === "done") await activate(trx, userId)
 
     await recordAudit(trx, { type: "area_saved", userId, payload: { district, travelRadius } })
   })

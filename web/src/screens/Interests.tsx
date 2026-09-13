@@ -6,6 +6,7 @@ import { haptic } from "../telegram"
 import type { InterestItem } from "../types"
 
 type Props = {
+  stepLabel: string
   catalog: InterestItem[]
   selected: string[]
   suggestions: string[]
@@ -16,6 +17,7 @@ type Props = {
 }
 
 export const Interests = ({
+  stepLabel,
   catalog,
   selected,
   suggestions,
@@ -38,7 +40,7 @@ export const Interests = ({
 
   return (
     <>
-      <StepHead {...copy.steps.interests} />
+      <StepHead label={stepLabel} {...copy.steps.interests} />
 
       <div className="chip-row" style={{ margin: "-4px 0 12px" }}>
         {catalog.map(item => (

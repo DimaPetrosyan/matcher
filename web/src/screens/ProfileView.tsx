@@ -31,7 +31,7 @@ export const ProfileView = ({ profile, onEdit }: Props) => {
       <div className="card summary">
         {line(copy.profile.interests, interests.join(", "))}
         {line(copy.profile.when, slots.join(" · "))}
-        {line(copy.profile.where, where)}
+        {profile.flow.includes("area") ? line(copy.profile.where, where) : null}
       </div>
 
       <div className="card">

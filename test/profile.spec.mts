@@ -23,3 +23,21 @@ describe("шаг онбординга", () => {
     expect(furthestStep("что-то своё", "availability")).toBe("availability")
   })
 })
+
+describe("поток онбординга", () => {
+  it("сейчас два шага: интересы и время, район скрыт", async () => {
+    const { onboardingFlow } = await import("../src/bot/screens.mts")
+    expect([...onboardingFlow]).toEqual(["interests", "availability"])
+  })
+
+  it("после последнего шага анкета считается заполненной", async () => {
+    const { nextStepAfter } = await import("../src/bot/screens.mts")
+    expect(nextStepAfter("interests")).toBe("availability")
+    expect(nextStepAfter("availability")).toBe("done")
+  })
+
+  it("шаг вне потока не уводит в середину анкеты", async () => {
+    const { nextStepAfter } = await import("../src/bot/screens.mts")
+    expect(nextStepAfter("area")).toBe("done")
+  })
+})

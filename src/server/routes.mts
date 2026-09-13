@@ -16,11 +16,12 @@ import {
   isInterestKey,
   isRadiusKey,
   isSlotKey,
+  nextStepAfter,
+  onboardingFlow,
   radii,
   slotByKey,
   slotKeysOf,
   slots,
-  steps,
   suggestionLimit,
   suggestionMaxLength,
   type InterestKey,
@@ -115,6 +116,7 @@ export const getProfile = async (session: Session) => {
   return json({
     step: profile.onboardingStep,
     status: profile.status,
+    flow: onboardingFlow,
     catalog,
     selected: {
       interests: profile.interests,
@@ -155,7 +157,12 @@ export const putInterests = async (session: Session, request: Request) => {
     return json({ error: "tooLong" }, 400)
   }
 
-  await saveInterests(session.userId, keys as InterestKeyValue[], suggestions, steps.availability)
+  await saveInterests(
+    session.userId,
+    keys as InterestKeyValue[],
+    suggestions,
+    nextStepAfter("interests"),
+  )
 
   return getProfile(session)
 }
@@ -172,7 +179,7 @@ export const putAvailability = async (session: Session, request: Request) => {
     return { recurrence, startTime, endTime }
   })
 
-  await saveSlots(session.userId, chosen, steps.area)
+  await saveSlots(session.userId, chosen, nextStepAfter("availability"))
 
   return getProfile(session)
 }
@@ -186,7 +193,7 @@ export const putArea = async (session: Session, request: Request) => {
 
   if (!isDistrictKey(district) || !isRadiusKey(radius)) return json({ error: "badRequest" }, 400)
 
-  await saveArea(session.userId, district, radius, steps.done)
+  await saveArea(session.userId, district, radius, nextStepAfter("area"))
 
   return getProfile(session)
 }

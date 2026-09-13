@@ -42,6 +42,8 @@ export {
   actions,
   callbackLimit,
   escapeHtml,
+  nextStepAfter,
+  onboardingFlow,
   pack,
   parse,
   renderAreaStub,

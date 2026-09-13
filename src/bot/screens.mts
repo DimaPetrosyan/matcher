@@ -15,6 +15,13 @@ export const steps = {
   done: "done",
 } as const
 
+export const onboardingFlow: readonly string[] = [steps.interests, steps.availability]
+
+export const nextStepAfter = (step: string) => {
+  const index = onboardingFlow.indexOf(step)
+  return index >= 0 && index < onboardingFlow.length - 1 ? onboardingFlow[index + 1]! : steps.done
+}
+
 export const suggestionLimit = 5
 
 export const suggestionMaxLength = 40

@@ -1,5 +1,7 @@
 export type Scheme = "light" | "dark"
 
+export type FlowStep = "interests" | "availability" | "area"
+
 export type InterestItem = { key: string; label: string }
 
 export type SlotItem = {
@@ -20,8 +22,9 @@ export type Catalog = {
 }
 
 export type Profile = {
-  step: "interests" | "availability" | "area" | "done"
+  step: FlowStep | "done"
   status: string
+  flow: FlowStep[]
   catalog: Catalog
   selected: {
     interests: string[]
