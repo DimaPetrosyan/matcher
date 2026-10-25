@@ -1,10 +1,22 @@
 import { InlineKeyboard, type Bot, type Context } from "grammy"
-import { registerUser, setWizardMessage, type UserSource } from "../database/index.mts"
+import {
+  findUserByTgId,
+  registerUser,
+  setWizardMessage,
+  type UserSource,
+} from "../database/index.mts"
 import { env } from "../env.mts"
 import { translatorFor } from "../i18n/index.mts"
 import { resolveAccess } from "./access.mts"
 import { parseStartPayload } from "./deeplink.mts"
-import { parse, renderCommunityLost, renderDenied, renderOpenMiniApp } from "./screens.mts"
+import {
+  parse,
+  renderCommunityLost,
+  renderDenied,
+  renderOpenMiniApp,
+  renderProfileReady,
+  steps,
+} from "./screens.mts"
 import { buildInterestsScreen, editScreen } from "./wizard.mts"
 
 export const onConsent = (bot: Bot) => async (ctx: Context) => {
@@ -55,6 +67,13 @@ export const onConsent = (bot: Bot) => async (ctx: Context) => {
 
   const messageId = ctx.callbackQuery.message?.message_id
   if (messageId) await setWizardMessage(userId, messageId)
+
+  const existing = await findUserByTgId(ctx.from.id)
+
+  if (existing?.onboardingStep === steps.done) {
+    await editScreen(ctx, renderProfileReady(t, env.webAppUrl))
+    return
+  }
 
   if (env.webAppUrl) {
     await editScreen(ctx, renderOpenMiniApp(t, env.webAppUrl))

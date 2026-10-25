@@ -1,10 +1,16 @@
 import type { Bot, Context } from "grammy"
-import { recordStart } from "../database/index.mts"
+import { findUserByTgId, recordStart } from "../database/index.mts"
 import { env } from "../env.mts"
 import { translatorFor } from "../i18n/index.mts"
 import { resolveAccess } from "./access.mts"
 import { parseStartPayload } from "./deeplink.mts"
-import { renderCommunityLost, renderDenied, renderWelcome } from "./screens.mts"
+import {
+  renderCommunityLost,
+  renderDenied,
+  renderProfileReady,
+  renderWelcome,
+  steps,
+} from "./screens.mts"
 
 export const onStart = (bot: Bot) => async (ctx: Context) => {
   if (!ctx.from) return
@@ -35,6 +41,15 @@ export const onStart = (bot: Bot) => async (ctx: Context) => {
 
   if (access.kind === "denied") {
     await ctx.reply(renderDenied(t).text, { parse_mode: "HTML" })
+    return
+  }
+
+  // Анкета уже заполнена — не зовём заполнять её заново.
+  const existing = await findUserByTgId(ctx.from.id)
+
+  if (existing?.onboardingStep === steps.done) {
+    const ready = renderProfileReady(t, env.webAppUrl)
+    await ctx.reply(ready.text, { parse_mode: "HTML", reply_markup: ready.keyboard })
     return
   }
 
