@@ -9,8 +9,10 @@ import {
   settleDueEvents,
   timeZone,
   type AnswerResult,
+  type Answer,
+  type EventBrief,
   type Invitation,
-  type Settled,
+  type Member,
 } from "../database/index.mts"
 import { resolveLocale, translatorFor, type TextKey } from "../i18n/index.mts"
 import { escapeHtml } from "./screens.mts"
@@ -78,7 +80,7 @@ const alertKey: Record<AnswerResult, TextKey> = {
   gone: "eventGone",
 }
 
-export const onEventAnswer = async (ctx: Context) => {
+export const onEventAnswer = (bot: Bot) => async (ctx: Context) => {
   if (!ctx.from || !ctx.callbackQuery?.data) return
 
   const t = translatorFor(ctx.from.language_code)
@@ -105,6 +107,8 @@ export const onEventAnswer = async (ctx: Context) => {
       ? `${t("eventAccepted")}. ${t("eventWaiting", { deadline: when(brief.respondUntil, locale) })}`
       : t(alertKey[answer.result])
 
+  await tellOthers(ctx.from.id, answer, brief, bot)
+
   // Переписываем само сообщение: иначе под ним остаётся «кто первым — тот идёт».
   try {
     await ctx.editMessageText(
@@ -122,7 +126,7 @@ export const onEventAnswer = async (ctx: Context) => {
 
 // Без username написать человеку нельзя — поэтому без него в анкету не пускаем,
 // и здесь ссылка есть у всех. Имя оставляем как запасной вариант.
-const member = (person: Settled["members"][number]) =>
+const member = (person: Pick<Member, "username" | "firstName">) =>
   person.username
     ? `• <a href="https://t.me/${person.username}">${escapeHtml(person.firstName ?? person.username)}</a>`
     : `• ${escapeHtml(person.firstName ?? "без имени")}`
@@ -159,4 +163,42 @@ export const announceSettled = async (bot: Bot) => {
   }
 
   return settled.length
+}
+
+// Минимум набран — обещаем встречу всем согласившимся; кто-то добавился
+// позже — остальным короткая новость. Своё сообщение человек и так видит.
+const tellOthers = async (actorTgId: number, answer: Answer, brief: EventBrief, bot: Bot) => {
+  if (!answer.justConfirmed && !answer.joined) return
+
+  const newcomer = answer.roster.find(person => person.tgId === actorTgId)
+
+  for (const person of answer.roster) {
+    if (!answer.justConfirmed && person.tgId === actorTgId) continue
+
+    const language = person.languageCode ?? undefined
+    const t = translatorFor(language)
+    const locale = resolveLocale(language)
+
+    const text = answer.justConfirmed
+      ? t("eventConfirmed", {
+          interest: interestLabel(brief.interestKey, t),
+          when: when(brief.startsAt, locale),
+          members: answer.roster.map(member).join("\n"),
+        })
+      : t("eventJoined", {
+          interest: interestLabel(brief.interestKey, t),
+          when: when(brief.startsAt, locale),
+          name: escapeHtml(newcomer?.firstName ?? newcomer?.username ?? "Кто-то"),
+          count: String(answer.roster.length),
+        })
+
+    try {
+      await bot.api.sendMessage(person.tgId, text, {
+        parse_mode: "HTML",
+        link_preview_options: { is_disabled: true },
+      })
+    } catch (error) {
+      console.error(`could not notify ${person.tgId} about ${brief.interestKey}:`, error)
+    }
+  }
 }

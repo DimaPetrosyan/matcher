@@ -123,7 +123,28 @@ export const markInvitationSent = (eventId: string, userId: string, messageId: n
 
 export type AnswerResult = "accepted" | "declined" | "full" | "busy" | "gone"
 
-export type Answer = { result: AnswerResult; confirmed: boolean }
+export type Member = {
+  tgId: number
+  username: string | null
+  firstName: string | null
+  languageCode: string | null
+}
+
+export type Answer = {
+  result: AnswerResult
+  // Минимум набран только что: встречу можно обещать.
+  justConfirmed: boolean
+  // Присоединился к уже обещанной встрече.
+  joined: boolean
+  roster: Member[]
+}
+
+const empty = (result: AnswerResult): Answer => ({
+  result,
+  justConfirmed: false,
+  joined: false,
+  roster: [],
+})
 
 export const declineEvent = (userId: string, eventId: string): Promise<Answer> =>
   db
@@ -133,7 +154,7 @@ export const declineEvent = (userId: string, eventId: string): Promise<Answer> =
       where event_id = ${eventId} and user_id = ${userId} and status = 'invited'
       returning user_id`,
     )
-    .then(rows => ({ result: rows.length ? "declined" : "gone", confirmed: false }) as Answer)
+    .then(rows => empty(rows.length ? "declined" : "gone"))
 
 export const acceptEvent = (userId: string, eventId: string): Promise<Answer> =>
   db.transaction(async trx => {
@@ -142,23 +163,29 @@ export const acceptEvent = (userId: string, eventId: string): Promise<Answer> =>
     // на две встречи в один слот двумя одновременными нажатиями.
     await trx.execute(sql`select 1 from app_user where id = ${userId} for update`)
 
-    const [event] = await trx.execute<{ startsAt: Date; status: string; maxSize: number }>(sql`
-      select e.starts_at as "startsAt", e.status::text as status, i.max_size as "maxSize"
+    const [event] = await trx.execute<{
+      startsAt: Date
+      status: string
+      minSize: number
+      maxSize: number
+      expired: boolean
+    }>(sql`
+      select e.starts_at as "startsAt", e.status::text as status,
+             i.min_size as "minSize", i.max_size as "maxSize",
+             e.respond_until <= now() as expired
       from event e join interest i on i.id = e.interest_id
       where e.id = ${eventId} for update of e`)
 
-    // Набор мог закрыться до нажатия: тогда приглашение уже 'closed',
-    // и причину отказа видно только по статусу самой встречи.
-    if (!event) return { result: "gone", confirmed: false }
-    if (event.status === "confirmed") return { result: "full", confirmed: false }
-    if (event.status !== "open") return { result: "gone", confirmed: false }
+    // К обещанной встрече можно присоединиться, пока есть места и не вышел
+    // срок: минимум — условие «состоится», а не «набор закрыт».
+    if (!event || event.expired || event.status === "cancelled") return empty("gone")
 
     const [mine] = await trx.execute<{ status: string }>(sql`
       select status::text from event_user where event_id = ${eventId} and user_id = ${userId}`)
 
-    if (!mine) return { result: "gone", confirmed: false }
-    if (mine.status === "accepted") return { result: "accepted", confirmed: false }
-    if (mine.status !== "invited") return { result: "gone", confirmed: false }
+    if (!mine) return empty("gone")
+    if (mine.status === "accepted") return empty("accepted")
+    if (mine.status !== "invited") return empty(event.status === "confirmed" ? "full" : "gone")
 
     const [busy] = await trx.execute<{ n: number }>(sql`
       select count(*)::int as n
@@ -169,29 +196,35 @@ export const acceptEvent = (userId: string, eventId: string): Promise<Answer> =>
       await trx.execute(sql`
         update event_user set status = 'closed', updated = now()
         where event_id = ${eventId} and user_id = ${userId}`)
-      return { result: "busy", confirmed: false }
+      return empty("busy")
     }
 
-    const [taken] = await trx.execute<{ n: number }>(sql`
+    const [before] = await trx.execute<{ n: number }>(sql`
       select count(*)::int as n from event_user
       where event_id = ${eventId} and status = 'accepted'`)
 
-    if ((taken?.n ?? 0) >= event.maxSize) {
+    const accepted = before?.n ?? 0
+
+    if (accepted >= event.maxSize) {
       await trx.execute(sql`
         update event_user set status = 'closed', updated = now()
         where event_id = ${eventId} and user_id = ${userId}`)
-      return { result: "full", confirmed: false }
+      return empty("full")
     }
 
     await trx.execute(sql`
       update event_user set status = 'accepted', updated = now()
       where event_id = ${eventId} and user_id = ${userId}`)
 
-    const confirmed = (taken?.n ?? 0) + 1 >= event.maxSize
+    const total = accepted + 1
+    const justConfirmed = total >= event.minSize && event.status !== "confirmed"
 
-    if (confirmed) {
+    if (justConfirmed) {
       await trx.execute(sql`
         update event set status = 'confirmed', updated = now() where id = ${eventId}`)
+    }
+
+    if (total >= event.maxSize) {
       await trx.execute(sql`
         update event_user set status = 'closed', updated = now()
         where event_id = ${eventId} and status = 'invited'`)
@@ -203,7 +236,14 @@ export const acceptEvent = (userId: string, eventId: string): Promise<Answer> =>
       where user_id = ${userId} and status = 'invited' and event_id in (
         select id from event where starts_at = ${event.startsAt} and id <> ${eventId})`)
 
-    return { result: "accepted", confirmed }
+    const roster = (await trx.execute(sql`
+      select u.tg_id as "tgId", u.username, u.first_name as "firstName",
+             u.language_code as "languageCode"
+      from event_user eu join app_user u on u.id = eu.user_id
+      where eu.event_id = ${eventId} and eu.status = 'accepted'
+      order by eu.updated`)) as unknown as Member[]
+
+    return { result: "accepted" as const, justConfirmed, joined: !justConfirmed, roster }
   })
 
 export type Settled = {

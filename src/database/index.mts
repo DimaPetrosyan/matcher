@@ -13,6 +13,7 @@ export {
   type AnswerResult,
   type EventBrief,
   type Invitation,
+  type Member,
   type Settled,
 } from "./events.mts"
 export {

@@ -112,6 +112,8 @@ export const ru = {
 
   eventWaiting: "Жду ответа остальных — напишу до {deadline}, когда станет ясно.",
 
+  eventJoined: "<b>{interest} · {when}</b>\n" + "\n" + "{name} тоже идёт. Теперь вас {count}.",
+
   eventGoing: "Иду",
   eventSkip: "Не в этот раз",
 

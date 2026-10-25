@@ -115,6 +115,9 @@ export const en: Dictionary = {
 
   eventWaiting: "Waiting for the others — I will write by {deadline} once it is clear.",
 
+  eventJoined:
+    "<b>{interest} · {when}</b>\n" + "\n" + "{name} is in too. That makes {count} of you.",
+
   eventGoing: "I am in",
   eventSkip: "Not this time",
 

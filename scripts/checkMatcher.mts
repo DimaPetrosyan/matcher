@@ -88,7 +88,8 @@ try {
 
   console.log("\n── ответы ──")
 
-  const [invite] = await pendingInvitations()
+  const mine = (await pendingInvitations()).filter(i => i.interestKey === "bar")
+  const [invite] = mine
   const eventId = invite!.eventId
 
   check("приглашение ждёт отправки", Boolean(invite))
@@ -105,7 +106,8 @@ try {
   await want(d, "tennis", ok)
   await generateEvents()
   const [tennis] = await db.execute<{ id: string }>(sql`
-    select e.id from event e join interest i on i.id = e.interest_id where i.key = 'tennis'`)
+    select e.id from event e join interest i on i.id = e.interest_id
+    where i.key = 'tennis' and e.community_id = ${chat!.id}`)
   const invitedToTennis = await db.execute<{ n: number }>(sql`
     select count(*)::int as n from event_user where event_id = ${tennis!.id} and user_id = ${a}`)
   check("занятого в этом слоте в новую встречу не зовут", invitedToTennis[0]!.n === 0, invitedToTennis[0])
@@ -121,7 +123,7 @@ try {
   await generateEvents()
   const [bill] = await db.execute<{ id: string; max: number }>(sql`
     select e.id, i.max_size as max from event e join interest i on i.id = e.interest_id
-    where i.key = 'billiards'`)
+    where i.key = 'billiards' and e.community_id = ${chat!.id}`)
 
   const results = []
   for (const user of many) results.push((await acceptEvent(user, bill!.id)).result)
