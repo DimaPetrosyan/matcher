@@ -147,7 +147,11 @@ export const acceptEvent = (userId: string, eventId: string): Promise<Answer> =>
       from event e join interest i on i.id = e.interest_id
       where e.id = ${eventId} for update of e`)
 
-    if (!event || event.status !== "open") return { result: "gone", confirmed: false }
+    // Набор мог закрыться до нажатия: тогда приглашение уже 'closed',
+    // и причину отказа видно только по статусу самой встречи.
+    if (!event) return { result: "gone", confirmed: false }
+    if (event.status === "confirmed") return { result: "full", confirmed: false }
+    if (event.status !== "open") return { result: "gone", confirmed: false }
 
     const [mine] = await trx.execute<{ status: string }>(sql`
       select status::text from event_user where event_id = ${eventId} and user_id = ${userId}`)
