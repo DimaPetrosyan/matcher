@@ -92,6 +92,34 @@ export const en: Dictionary = {
     "\n" +
     "<i>Telegram Settings → Username. Then come back and tap “Let’s go”.</i>",
 
+  eventInvite:
+    "<b>{interest} · {when}</b>\n" +
+    "\n" +
+    "From {min} to {max} people needed. First to say yes is in.\n" +
+    "\n" +
+    "<i>You pick the place yourselves — I only bring you together.</i>",
+
+  eventConfirmed:
+    "<b>It is on · {interest} · {when}</b>\n" +
+    "\n" +
+    "{members}\n" +
+    "\n" +
+    "<i>Agree on the place yourselves — I do not pick it.</i>",
+
+  eventCancelled:
+    "<b>Not enough people this time</b>\n" +
+    "\n" +
+    "{interest}, {when} — too few wanted to go. I will suggest something else.",
+
+  eventGoing: "I am in",
+  eventSkip: "Not this time",
+
+  eventAccepted: "Great, you are in",
+  eventDeclined: "Got it, not this time",
+  eventFull: "No places left",
+  eventBusy: "You are already going to another meetup at this time",
+  eventGone: "This meetup is already closed",
+
   openMiniApp:
     "<b>One thing left — your profile</b>\n" +
     "\n" +

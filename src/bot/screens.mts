@@ -6,7 +6,14 @@ import { slots, type Slot, type SlotKey } from "./slots.mts"
 
 export const callbackLimit = 64
 
-export const actions = { consent: "go", interest: "i", slot: "s", next: "n", back: "b" } as const
+export const actions = {
+  consent: "go",
+  interest: "i",
+  slot: "s",
+  next: "n",
+  back: "b",
+  event: "e",
+} as const
 
 export const steps = {
   interests: "interests",

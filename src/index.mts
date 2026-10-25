@@ -1,5 +1,6 @@
 import { bot, startBot } from "./bot/index.mts"
 import { client, setupDb } from "./database/index.mts"
+import { startScheduler } from "./scheduler.mts"
 import { startServer } from "./server/index.mts"
 
 await setupDb()
@@ -8,8 +9,11 @@ const server = startServer(bot)
 
 await startBot()
 
+const scheduler = startScheduler()
+
 const shutdown = async (signal: string) => {
   console.log(`shutting down on ${signal}`)
+  scheduler.stop()
   await server.stop()
   await bot.stop()
   await client.close()
