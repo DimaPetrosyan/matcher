@@ -44,3 +44,18 @@ export type AccessProblem =
   | { kind: "noUsername" }
   | { kind: "unauthorized" }
   | { kind: "offline" }
+
+export type UserEvent = {
+  id: string
+  label: string
+  interestKey: string
+  startsAt: string
+  endsAt: string
+  respondUntil: string
+  status: "open" | "confirmed" | "cancelled"
+  myStatus: "invited" | "accepted" | "declined" | "closed"
+  minSize: number
+  maxSize: number
+  going: number
+  roster: { firstName: string | null; username: string | null }[]
+}

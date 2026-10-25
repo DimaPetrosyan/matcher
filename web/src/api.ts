@@ -1,5 +1,5 @@
 import { initData } from "./telegram"
-import type { AccessProblem, Profile } from "./types"
+import type { AccessProblem, Profile, UserEvent } from "./types"
 
 export class ApiError extends Error {
   problem: AccessProblem
@@ -24,7 +24,7 @@ const problemFrom = (status: number, payload: { kind?: string; community?: strin
   return null
 }
 
-const request = async (method: string, path: string, payload?: unknown): Promise<Profile> => {
+const request = async <T>(method: string, path: string, payload?: unknown): Promise<T> => {
   let response: Response
 
   try {
@@ -41,7 +41,7 @@ const request = async (method: string, path: string, payload?: unknown): Promise
   }
 
   const data = (await response.json().catch(() => null)) as
-    | (Profile & { kind?: string; community?: string; error?: string })
+    | (T & { kind?: string; community?: string; error?: string })
     | null
 
   if (!response.ok) {
@@ -51,13 +51,17 @@ const request = async (method: string, path: string, payload?: unknown): Promise
     throw new Error(data?.error ?? `request failed with ${response.status}`)
   }
 
-  return data as Profile
+  return data as T
 }
 
 export const api = {
-  profile: () => request("GET", "/api/profile"),
+  profile: () => request<Profile>("GET", "/api/profile"),
   saveInterests: (keys: string[], suggestions: string[]) =>
-    request("PUT", "/api/interests", { keys, suggestions }),
-  saveAvailability: (slots: string[]) => request("PUT", "/api/availability", { slots }),
-  saveArea: (district: string, radius: string) => request("PUT", "/api/area", { district, radius }),
+    request<Profile>("PUT", "/api/interests", { keys, suggestions }),
+  saveAvailability: (slots: string[]) => request<Profile>("PUT", "/api/availability", { slots }),
+  saveArea: (district: string, radius: string) =>
+    request<Profile>("PUT", "/api/area", { district, radius }),
+  events: () => request<{ events: UserEvent[] }>("GET", "/api/events"),
+  answerEvent: (eventId: string, going: boolean) =>
+    request<{ result: string }>("PUT", "/api/events", { eventId, going }),
 }

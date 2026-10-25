@@ -15,9 +15,17 @@ import {
   type Member,
 } from "../database/index.mts"
 import { resolveLocale, translatorFor, type TextKey } from "../i18n/index.mts"
+import { env } from "../env.mts"
 import { escapeHtml } from "./screens.mts"
 import { interestTextKey, isInterestKey } from "./catalog.mts"
-import { actions, pack, parse } from "./screens.mts"
+import { parse } from "./screens.mts"
+
+// Идентификатор в ссылке — только навигация. Доступ сервер проверяет сам:
+// чужую встречу по такой ссылке не откроешь.
+export const openEvent = (t: ReturnType<typeof translatorFor>, eventId: string) =>
+  env.webAppUrl
+    ? new InlineKeyboard().webApp(t("eventOpen"), `${env.webAppUrl}?event=${eventId}`)
+    : new InlineKeyboard()
 
 const when = (startsAt: Date, locale: string) =>
   new Intl.DateTimeFormat(locale, {
@@ -45,9 +53,7 @@ export const renderInvite = (invitation: Invitation) => {
       min: String(invitation.minSize),
       max: String(invitation.maxSize),
     }),
-    keyboard: new InlineKeyboard()
-      .text(t("eventGoing"), pack(actions.event, invitation.eventId, "yes"))
-      .text(t("eventSkip"), pack(actions.event, invitation.eventId, "no")),
+    keyboard: openEvent(t, invitation.eventId),
   }
 }
 
@@ -167,12 +173,7 @@ export const announceSettled = async (bot: Bot) => {
 
 // Минимум набран — обещаем встречу всем согласившимся; кто-то добавился
 // позже — остальным короткая новость. Своё сообщение человек и так видит.
-export const tellOthers = async (
-  actorTgId: number,
-  answer: Answer,
-  brief: EventBrief,
-  bot: Bot,
-) => {
+const tellOthers = async (actorTgId: number, answer: Answer, brief: EventBrief, bot: Bot) => {
   if (!answer.justConfirmed && !answer.joined) return
 
   const newcomer = answer.roster.find(person => person.tgId === actorTgId)
@@ -206,4 +207,14 @@ export const tellOthers = async (
       console.error(`could not notify ${person.tgId} about ${brief.interestKey}:`, error)
     }
   }
+}
+
+export const announceAnswer = async (
+  bot: Bot,
+  actorTgId: number,
+  eventId: string,
+  answer: Answer,
+) => {
+  const brief = await eventBrief(eventId)
+  if (brief) await tellOthers(actorTgId, answer, brief, bot)
 }

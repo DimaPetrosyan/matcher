@@ -328,14 +328,54 @@ export const settleDueEvents = async (): Promise<Settled[]> => {
   return [...byEvent.values()]
 }
 
-export type EventBrief = { interestKey: string; startsAt: Date; respondUntil: Date }
+export type EventBrief = {
+  eventId: string
+  interestKey: string
+  startsAt: Date
+  respondUntil: Date
+}
 
 export const eventBrief = async (eventId: string): Promise<EventBrief | null> => {
   const [row] = (await db.execute(sql`
-    select i.key::text as "interestKey", e.starts_at as "startsAt",
+    select e.id as "eventId", i.key::text as "interestKey", e.starts_at as "startsAt",
            e.respond_until as "respondUntil"
     from event e join interest i on i.id = e.interest_id
     where e.id = ${eventId}`)) as unknown as EventBrief[]
 
   return row ?? null
 }
+
+export type UserEvent = {
+  id: string
+  interestKey: string
+  startsAt: Date
+  endsAt: Date
+  respondUntil: Date
+  status: "open" | "confirmed" | "cancelled"
+  myStatus: "invited" | "accepted" | "declined" | "closed"
+  minSize: number
+  maxSize: number
+  going: number
+  roster: { firstName: string | null; username: string | null }[]
+}
+
+// Встречи человека: и те, где ещё ждут ответа, и уже решённые.
+// Прошедшие держим сутки, чтобы «вчера ходили» не исчезало на глазах.
+export const listUserEvents = (userId: string) =>
+  db.execute(sql`
+    select e.id, i.key::text as "interestKey", e.starts_at as "startsAt",
+           e.ends_at as "endsAt", e.respond_until as "respondUntil",
+           e.status::text as status, eu.status::text as "myStatus",
+           i.min_size as "minSize", i.max_size as "maxSize",
+           (select count(*)::int from event_user a
+            where a.event_id = e.id and a.status = 'accepted') as going,
+           (select coalesce(
+              json_agg(json_build_object('firstName', u.first_name, 'username', u.username)
+                       order by a.updated), '[]'::json)
+            from event_user a join app_user u on u.id = a.user_id
+            where a.event_id = e.id and a.status = 'accepted') as roster
+    from event_user eu
+    join event e on e.id = eu.event_id
+    join interest i on i.id = e.interest_id
+    where eu.user_id = ${userId} and e.starts_at > now() - interval '1 day'
+    order by e.starts_at`) as unknown as Promise<UserEvent[]>

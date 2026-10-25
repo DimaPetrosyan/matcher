@@ -79,5 +79,29 @@ export const copy = {
     },
   },
 
+  events: {
+    title: "Встречи",
+    subtitle: "Приглашения и то, куда вы уже идёте.",
+    empty: "Пока ничего нет",
+    emptyText: "Как только найдутся люди с теми же интересами и временем, пришлю приглашение в чат.",
+    tabEvents: "Встречи",
+    tabProfile: "Анкета",
+    going: "Иду",
+    skip: "Не в этот раз",
+    answerBy: "ответить до {deadline}",
+    needed: "нужно от {min} до {max}",
+    already: "идут {going}",
+    status: {
+      invited: "Ждёт ответа",
+      accepted: "Вы идёте",
+      declined: "Вы отказались",
+      closed: "Не успели",
+      confirmed: "Состоится",
+      cancelled: "Не собрались",
+    },
+    withYou: "Кто идёт",
+    noPlace: "Место выбираете сами.",
+  },
+
   saveFailed: { title: "Не сохранилось", text: "Нет сети. Выбор на экране остался." },
 } as const

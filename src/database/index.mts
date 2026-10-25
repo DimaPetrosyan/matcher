@@ -5,6 +5,7 @@ export {
   declineEvent,
   eventBrief,
   generateEvents,
+  listUserEvents,
   markInvitationSent,
   pendingInvitations,
   settleDueEvents,
@@ -14,6 +15,7 @@ export {
   type EventBrief,
   type Invitation,
   type Member,
+  type UserEvent,
   type Settled,
 } from "./events.mts"
 export {

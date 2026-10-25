@@ -114,6 +114,8 @@ export const ru = {
 
   eventJoined: "<b>{interest} · {when}</b>\n" + "\n" + "{name} тоже идёт. Теперь вас {count}.",
 
+  eventOpen: "Открыть встречу",
+
   eventGoing: "Иду",
   eventSkip: "Не в этот раз",
 

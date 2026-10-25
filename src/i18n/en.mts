@@ -118,6 +118,8 @@ export const en: Dictionary = {
   eventJoined:
     "<b>{interest} · {when}</b>\n" + "\n" + "{name} is in too. That makes {count} of you.",
 
+  eventOpen: "Open the meetup",
+
   eventGoing: "I am in",
   eventSkip: "Not this time",
 

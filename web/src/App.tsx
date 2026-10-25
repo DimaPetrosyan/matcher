@@ -5,13 +5,19 @@ import { AccessState, LoadingState } from "./screens/AccessState"
 import { Area } from "./screens/Area"
 import { Availability } from "./screens/Availability"
 import { Interests } from "./screens/Interests"
+import { Events } from "./screens/Events"
 import { ProfileView } from "./screens/ProfileView"
 import { ApiError, api } from "./api"
 import { copy } from "./copy"
 import { applyScheme, haptic, tg } from "./telegram"
-import type { AccessProblem, FlowStep, Profile, Scheme } from "./types"
+import type { AccessProblem, FlowStep, Profile, Scheme, UserEvent } from "./types"
 
 type Screen = FlowStep | "profile"
+
+type Tab = "events" | "profile"
+
+// Ссылка из чата ведёт на конкретную встречу: подсвечиваем её в списке.
+const wantedEvent = new URLSearchParams(window.location.search).get("event")
 
 const toggle = (list: string[], key: string) =>
   list.includes(key) ? list.filter(item => item !== key) : [...list, key]
@@ -37,6 +43,9 @@ export const App = () => {
   const [radius, setRadius] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [failed, setFailed] = useState(false)
+  const [tab, setTab] = useState<Tab>(wantedEvent ? "events" : "events")
+  const [events, setEvents] = useState<UserEvent[]>([])
+  const [answering, setAnswering] = useState<string | null>(null)
   const retry = useRef<(() => void) | null>(null)
 
   const adopt = useCallback((next: Profile, moveTo?: Screen) => {
@@ -55,6 +64,10 @@ export const App = () => {
     try {
       const next = await api.profile()
       adopt(next, screenOf(next))
+
+      // Анкета не заполнена — встречам взяться неоткуда, сразу ведём в неё.
+      if (next.step !== "done") setTab("profile")
+      else setEvents((await api.events()).events)
     } catch (error) {
       if (error instanceof ApiError) setProblem(error.problem)
       else setProblem({ kind: "offline" })
@@ -226,9 +239,53 @@ export const App = () => {
     }
   })()
 
+  const answer = async (eventId: string, going: boolean) => {
+    setAnswering(eventId)
+
+    try {
+      await api.answerEvent(eventId, going)
+      setEvents((await api.events()).events)
+    } catch {
+      haptic.failed()
+      setFailed(true)
+    } finally {
+      setAnswering(null)
+    }
+  }
+
+  const done = profile.step === "done"
+
   return (
     <div className="app">
+      {done ? (
+        <div className="tabs">
+          <button
+            type="button"
+            className={`tab ${tab === "events" ? "on" : ""}`}
+            onClick={() => setTab("events")}
+          >
+            {copy.events.tabEvents}
+          </button>
+          <button
+            type="button"
+            className={`tab ${tab === "profile" ? "on" : ""}`}
+            onClick={() => setTab("profile")}
+          >
+            {copy.events.tabProfile}
+          </button>
+        </div>
+      ) : null}
+
       <div className="content">
+        {done && tab === "events" ? (
+          <Events
+            events={events}
+            busy={answering}
+            highlight={wantedEvent}
+            onAnswer={answer}
+          />
+        ) : null}
+
         {failed ? (
           <Toast
             title={copy.saveFailed.title}
@@ -238,7 +295,7 @@ export const App = () => {
           />
         ) : null}
 
-        {screen === "interests" ? (
+        {tab === "profile" && screen === "interests" ? (
           <Interests
             stepLabel={stepLabel}
             catalog={profile.catalog.interests}
@@ -253,7 +310,7 @@ export const App = () => {
           />
         ) : null}
 
-        {screen === "availability" ? (
+        {tab === "profile" && screen === "availability" ? (
           <Availability
             stepLabel={stepLabel}
             catalog={profile.catalog.slots}
@@ -262,7 +319,7 @@ export const App = () => {
           />
         ) : null}
 
-        {screen === "area" ? (
+        {tab === "profile" && screen === "area" ? (
           <Area
             stepLabel={stepLabel}
             districts={profile.catalog.districts}
@@ -274,12 +331,12 @@ export const App = () => {
           />
         ) : null}
 
-        {screen === "profile" ? (
+        {tab === "profile" && screen === "profile" ? (
           <ProfileView profile={profile} onEdit={() => setScreen(flow[0] ?? "interests")} />
         ) : null}
       </div>
 
-      <MainButton {...button} scheme={scheme} />
+      {tab === "profile" || !done ? <MainButton {...button} scheme={scheme} /> : null}
     </div>
   )
 }
