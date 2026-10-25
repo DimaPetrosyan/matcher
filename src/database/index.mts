@@ -3,6 +3,7 @@ export { setupDb } from "./setupDb.mts"
 export {
   acceptEvent,
   declineEvent,
+  eventBrief,
   generateEvents,
   markInvitationSent,
   pendingInvitations,
@@ -10,6 +11,7 @@ export {
   timeZone,
   type Answer,
   type AnswerResult,
+  type EventBrief,
   type Invitation,
   type Settled,
 } from "./events.mts"

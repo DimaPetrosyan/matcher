@@ -19,10 +19,12 @@ const dayIn = (days: number) => {
   return ["SU", "MO", "TU", "WE", "TH", "FR", "SA"][index]!
 }
 
+// Чистим и трогаем только свою песочницу: рядом живут настоящие встречи.
 const cleanup = async () => {
+  await db.execute(sql`
+    delete from event where community_id in (select id from community where tg_chat_id = ${chatId})`)
   await db.execute(sql`delete from app_user where tg_id between ${firstTgId} and ${firstTgId + 99}`)
   await db.execute(sql`delete from community where tg_chat_id = ${chatId}`)
-  await db.execute(sql`delete from event where id not in (select event_id from event_user)`)
   await db.execute(sql`delete from audit_log where user_id is null`)
 }
 
@@ -137,7 +139,9 @@ try {
 
   check("до срока ничего не подводится", (await settleDueEvents()).length === 0)
 
-  await db.execute(sql`update event set respond_until = now() - interval '1 minute' where status = 'open'`)
+  await db.execute(sql`
+    update event set respond_until = now() - interval '1 minute'
+    where status = 'open' and community_id = ${chat!.id}`)
   const settled = await settleDueEvents()
   const barEvent = settled.find(e => e.interestKey === "bar")
   check("встречу без минимума отменили", barEvent?.status === "cancelled", barEvent?.status)
@@ -145,7 +149,7 @@ try {
   check("повторный проход пустой", (await settleDueEvents()).length === 0)
   const [left] = await db.execute<{ n: number }>(sql`
     select count(*)::int as n from event_user eu join event e on e.id = eu.event_id
-    where eu.status = 'invited' and e.status <> 'open'`)
+    where eu.status = 'invited' and e.status <> 'open' and e.community_id = ${chat!.id}`)
   check("у закрытых встреч ожидающих нет", left!.n === 0, left)
 } finally {
   await cleanup()

@@ -111,6 +111,10 @@ export const en: Dictionary = {
     "\n" +
     "{interest}, {when} — too few wanted to go. I will suggest something else.",
 
+  eventAnswered: "<b>{interest} · {when}</b>\n" + "\n" + "{status}",
+
+  eventWaiting: "Waiting for the others — I will write by {deadline} once it is clear.",
+
   eventGoing: "I am in",
   eventSkip: "Not this time",
 

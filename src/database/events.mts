@@ -281,3 +281,15 @@ export const settleDueEvents = async (): Promise<Settled[]> => {
 
   return [...byEvent.values()]
 }
+
+export type EventBrief = { interestKey: string; startsAt: Date; respondUntil: Date }
+
+export const eventBrief = async (eventId: string): Promise<EventBrief | null> => {
+  const [row] = (await db.execute(sql`
+    select i.key::text as "interestKey", e.starts_at as "startsAt",
+           e.respond_until as "respondUntil"
+    from event e join interest i on i.id = e.interest_id
+    where e.id = ${eventId}`)) as unknown as EventBrief[]
+
+  return row ?? null
+}

@@ -108,6 +108,10 @@ export const ru = {
     "\n" +
     "{interest}, {when} — желающих не хватило. Предложу что-нибудь ещё.",
 
+  eventAnswered: "<b>{interest} · {when}</b>\n" + "\n" + "{status}",
+
+  eventWaiting: "Жду ответа остальных — напишу до {deadline}, когда станет ясно.",
+
   eventGoing: "Иду",
   eventSkip: "Не в этот раз",
 

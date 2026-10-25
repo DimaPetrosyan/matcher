@@ -2,6 +2,7 @@ import { InlineKeyboard, type Bot, type Context } from "grammy"
 import {
   acceptEvent,
   declineEvent,
+  eventBrief,
   findUserByTgId,
   markInvitationSent,
   pendingInvitations,
@@ -25,6 +26,9 @@ const when = (startsAt: Date, locale: string) =>
     minute: "2-digit",
     timeZone,
   }).format(startsAt)
+
+const interestLabel = (key: string, t: ReturnType<typeof translatorFor>) =>
+  isInterestKey(key) ? t(interestTextKey[key]) : key
 
 export const renderInvite = (invitation: Invitation) => {
   const t = translatorFor(invitation.languageCode ?? undefined)
@@ -91,15 +95,30 @@ export const onEventAnswer = async (ctx: Context) => {
 
   await ctx.answerCallbackQuery(t(alertKey[answer.result]))
 
+  const brief = await eventBrief(eventId)
+  if (!brief) return
+
+  const locale = resolveLocale(ctx.from.language_code)
+
+  const status =
+    answer.result === "accepted"
+      ? `${t("eventAccepted")}. ${t("eventWaiting", { deadline: when(brief.respondUntil, locale) })}`
+      : t(alertKey[answer.result])
+
+  // Переписываем само сообщение: иначе под ним остаётся «кто первым — тот идёт».
   try {
-    await ctx.editMessageReplyMarkup({ reply_markup: new InlineKeyboard() })
+    await ctx.editMessageText(
+      t("eventAnswered", {
+        interest: interestLabel(brief.interestKey, t),
+        when: when(brief.startsAt, locale),
+        status,
+      }),
+      { parse_mode: "HTML", reply_markup: new InlineKeyboard() },
+    )
   } catch {
-    // кнопки уже сняты — не ошибка
+    // уже переписано — не ошибка
   }
 }
-
-const interestLabel = (key: string, t: ReturnType<typeof translatorFor>) =>
-  isInterestKey(key) ? t(interestTextKey[key]) : key
 
 // Без username написать человеку нельзя — поэтому без него в анкету не пускаем,
 // и здесь ссылка есть у всех. Имя оставляем как запасной вариант.
