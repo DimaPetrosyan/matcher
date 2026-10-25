@@ -9,7 +9,7 @@ const server = startServer(bot)
 
 await startBot()
 
-const scheduler = startScheduler()
+const scheduler = startScheduler(bot)
 
 const shutdown = async (signal: string) => {
   console.log(`shutting down on ${signal}`)

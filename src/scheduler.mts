@@ -1,3 +1,4 @@
+import type { Bot } from "grammy"
 import { announceSettled, sendPendingInvitations } from "./bot/index.mts"
 import { generateEvents } from "./database/index.mts"
 
@@ -12,18 +13,18 @@ const run = async (name: string, task: () => Promise<unknown>) => {
   }
 }
 
-const tick = async () => {
+const tick = async (bot: Bot) => {
   await run("generate", generateEvents)
-  await run("invite", sendPendingInvitations)
-  await run("settle", announceSettled)
+  await run("invite", () => sendPendingInvitations(bot))
+  await run("settle", () => announceSettled(bot))
 }
 
 // Один процесс: два экземпляра разослали бы приглашения дважды.
 // То же ограничение, что у поллинга.
-export const startScheduler = () => {
-  void tick()
+export const startScheduler = (bot: Bot) => {
+  void tick(bot)
 
-  const timer = setInterval(() => void tick(), minutes(5))
+  const timer = setInterval(() => void tick(bot), minutes(5))
 
   return { stop: () => clearInterval(timer) }
 }

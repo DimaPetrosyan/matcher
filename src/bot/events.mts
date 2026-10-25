@@ -1,4 +1,4 @@
-import { InlineKeyboard, type Context } from "grammy"
+import { InlineKeyboard, type Bot, type Context } from "grammy"
 import {
   acceptEvent,
   declineEvent,
@@ -15,7 +15,6 @@ import { resolveLocale, translatorFor, type TextKey } from "../i18n/index.mts"
 import { escapeHtml } from "./screens.mts"
 import { interestTextKey, isInterestKey } from "./catalog.mts"
 import { actions, pack, parse } from "./screens.mts"
-import { bot } from "./bot.mts"
 
 const when = (startsAt: Date, locale: string) =>
   new Intl.DateTimeFormat(locale, {
@@ -46,7 +45,7 @@ export const renderInvite = (invitation: Invitation) => {
   }
 }
 
-export const sendPendingInvitations = async () => {
+export const sendPendingInvitations = async (bot: Bot) => {
   const invitations = await pendingInvitations()
 
   for (const invitation of invitations) {
@@ -109,7 +108,7 @@ const member = (person: Settled["members"][number]) =>
     ? `• <a href="https://t.me/${person.username}">${escapeHtml(person.firstName ?? person.username)}</a>`
     : `• ${escapeHtml(person.firstName ?? "без имени")}`
 
-export const announceSettled = async () => {
+export const announceSettled = async (bot: Bot) => {
   const settled = await settleDueEvents()
 
   for (const event of settled) {
