@@ -2,6 +2,7 @@ import type { Bot } from "grammy"
 import {
   findUserByTgId,
   listActiveInterests,
+  refreshUsername,
   loadProfile,
   saveArea,
   saveInterests,
@@ -73,8 +74,14 @@ export const authorize = async (
     }
   }
 
+  if (!check.user.username) {
+    return { error: json({ error: "forbidden", kind: "noUsername" }, 403) }
+  }
+
   const user = await findUserByTgId(check.user.tgId)
   if (!user) return { error: json({ error: "notRegistered" }, 403) }
+
+  await refreshUsername(user.id, check.user.username)
 
   return {
     session: { userId: user.id, tgId: check.user.tgId, languageCode: check.user.languageCode },

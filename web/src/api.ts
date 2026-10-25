@@ -17,6 +17,7 @@ const problemFrom = (status: number, payload: { kind?: string; community?: strin
   if (status === 403) {
     if (payload?.kind === "lost") return { kind: "lost", community: payload.community } as const
     if (payload?.kind === "denied") return { kind: "notMember" } as const
+    if (payload?.kind === "noUsername") return { kind: "noUsername" } as const
     return { kind: "notRegistered" } as const
   }
 

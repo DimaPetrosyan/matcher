@@ -1,4 +1,4 @@
-import type { Bot, Context } from "grammy"
+import { InlineKeyboard, type Bot, type Context } from "grammy"
 import { registerUser, setWizardMessage, type UserSource } from "../database/index.mts"
 import { env } from "../env.mts"
 import { translatorFor } from "../i18n/index.mts"
@@ -30,6 +30,12 @@ export const onConsent = (bot: Bot) => async (ctx: Context) => {
     }
 
     await editScreen(ctx, renderDenied(t))
+    return
+  }
+
+  if (!ctx.from.username) {
+    await ctx.answerCallbackQuery()
+    await editScreen(ctx, { text: t("needUsername"), keyboard: new InlineKeyboard() })
     return
   }
 

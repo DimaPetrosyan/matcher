@@ -41,5 +41,6 @@ export type AccessProblem =
   | { kind: "lost"; community?: string }
   | { kind: "unverifiable" }
   | { kind: "notRegistered" }
+  | { kind: "noUsername" }
   | { kind: "unauthorized" }
   | { kind: "offline" }

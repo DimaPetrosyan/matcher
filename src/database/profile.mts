@@ -220,3 +220,9 @@ export const saveArea = (userId: string, district: string, travelRadius: string,
 
     return { completed: step === "done" && current?.step !== "done" }
   })
+
+export const refreshUsername = (userId: string, username: string) =>
+  db
+    .update(appUser)
+    .set({ username, updated: sql`now()` })
+    .where(and(eq(appUser.id, userId), sql`${appUser.username} is distinct from ${username}`))

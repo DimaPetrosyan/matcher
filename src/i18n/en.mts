@@ -84,6 +84,14 @@ export const en: Dictionary = {
   areaStub:
     "<b>Step 3 of 3 · Which areas work?</b>\n" + "\n" + "A list of areas will show up here soon.",
 
+  needUsername:
+    "<b>Set up a @username first</b>\n" +
+    "\n" +
+    "Without it the others cannot message you: I cannot create a group chat, " +
+    "and the roster only links people who have a @username.\n" +
+    "\n" +
+    "<i>Telegram Settings → Username. Then come back and tap “Let’s go”.</i>",
+
   openMiniApp:
     "<b>One thing left — your profile</b>\n" +
     "\n" +
