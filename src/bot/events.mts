@@ -167,7 +167,12 @@ export const announceSettled = async (bot: Bot) => {
 
 // Минимум набран — обещаем встречу всем согласившимся; кто-то добавился
 // позже — остальным короткая новость. Своё сообщение человек и так видит.
-const tellOthers = async (actorTgId: number, answer: Answer, brief: EventBrief, bot: Bot) => {
+export const tellOthers = async (
+  actorTgId: number,
+  answer: Answer,
+  brief: EventBrief,
+  bot: Bot,
+) => {
   if (!answer.justConfirmed && !answer.joined) return
 
   const newcomer = answer.roster.find(person => person.tgId === actorTgId)

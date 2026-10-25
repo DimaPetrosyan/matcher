@@ -68,7 +68,13 @@ export const generateEvents = () =>
         on e.community_id = w.community_id
        and e.interest_id = w.interest_id
        and e.starts_at = w.starts_at
-      where e.status = 'open'
+      join interest i on i.id = e.interest_id
+      -- В подтверждённую встречу тоже зовём, пока есть места и не вышел срок:
+      -- минимум — это «состоится», а не «набор закрыт».
+      where e.status in ('open', 'confirmed')
+        and e.respond_until > now()
+        and (select count(*) from event_user taken
+             where taken.event_id = e.id and taken.status = 'accepted') < i.max_size
         and not exists (
           select 1
           from event_user busy

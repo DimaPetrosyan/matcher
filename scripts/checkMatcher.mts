@@ -137,6 +137,33 @@ try {
   check("встреча подтверждена, ожидающих не осталось",
     state!.status === "confirmed" && state!.waiting === 0, state)
 
+  console.log("\n── добор в подтверждённую ──")
+
+  const late = await add(20)
+  await want(late, "billiards", ok)
+  await generateEvents()
+  const [invitedLate] = await db.execute<{ n: number }>(sql`
+    select count(*)::int as n from event_user where event_id = ${bill!.id} and user_id = ${late}`)
+  check("в подтверждённую с местами не зовут (их нет)", invitedLate!.n === 0, invitedLate)
+
+  const roomy = await add(21)
+  const mate = await add(22)
+  await want(roomy, "karaoke", ok)
+  await want(mate, "karaoke", ok)
+  await generateEvents()
+  const [kara] = await db.execute<{ id: string }>(sql`
+    select e.id from event e join interest i on i.id = e.interest_id
+    where i.key = 'karaoke' and e.community_id = ${chat!.id}`)
+  await acceptEvent(roomy, kara!.id)
+  await acceptEvent(mate, kara!.id)
+
+  const third = await add(23)
+  await want(third, "karaoke", ok)
+  await generateEvents()
+  const joined = await acceptEvent(third, kara!.id)
+  check("к подтверждённой с местами можно присоединиться",
+    joined.result === "accepted" && joined.joined && joined.roster.length === 3, joined.result)
+
   console.log("\n── срок ──")
 
   check("до срока ничего не подводится", (await settleDueEvents()).length === 0)
