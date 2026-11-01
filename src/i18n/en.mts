@@ -149,7 +149,7 @@ export const en: Dictionary = {
 
   buttonEditProfile: "Edit profile",
 
-  menuButton: "Profile",
+  menuButton: "Calendar",
 
   buttonOpenMiniApp: "Fill in the profile",
 

@@ -145,7 +145,7 @@ export const ru = {
 
   buttonEditProfile: "Изменить анкету",
 
-  menuButton: "Анкета",
+  menuButton: "Календарь",
 
   buttonOpenMiniApp: "Заполнить анкету",
 

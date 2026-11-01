@@ -59,3 +59,24 @@ export type UserEvent = {
   going: number
   roster: { firstName: string | null; username: string | null }[]
 }
+
+export type MeetStatus = "pending" | "going" | "confirmed" | "declined" | "full" | "failed"
+
+export type Meeting = {
+  id: string
+  key: string
+  slot: string
+  act: string
+  dateLong: string
+  short: string
+  partLow: string
+  partLabel: string
+  hours: string
+  min: number
+  max: number
+  going: number
+  others: { name: string; username: string | null }[]
+  status: MeetStatus
+  until: string
+  deadline: string
+}
