@@ -41,5 +41,42 @@ export type AccessProblem =
   | { kind: "lost"; community?: string }
   | { kind: "unverifiable" }
   | { kind: "notRegistered" }
+  | { kind: "noUsername" }
   | { kind: "unauthorized" }
   | { kind: "offline" }
+
+export type UserEvent = {
+  id: string
+  label: string
+  interestKey: string
+  startsAt: string
+  endsAt: string
+  respondUntil: string
+  status: "open" | "confirmed" | "cancelled"
+  myStatus: "invited" | "accepted" | "declined" | "closed"
+  minSize: number
+  maxSize: number
+  going: number
+  roster: { firstName: string | null; username: string | null }[]
+}
+
+export type MeetStatus = "pending" | "going" | "confirmed" | "declined" | "full" | "failed"
+
+export type Meeting = {
+  id: string
+  key: string
+  slot: string
+  act: string
+  dateLong: string
+  short: string
+  partLow: string
+  partLabel: string
+  hours: string
+  min: number
+  max: number
+  going: number
+  others: { name: string; username: string | null }[]
+  status: MeetStatus
+  until: string
+  deadline: string
+}

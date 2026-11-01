@@ -29,6 +29,7 @@ type WebApp = {
   setHeaderColor(color: string): void
   setBackgroundColor(color: string): void
   setBottomBarColor?(color: string): void
+  disableVerticalSwipes?(): void
   onEvent(event: string, handler: Handler): void
   offEvent(event: string, handler: Handler): void
   BackButton: { show(): void; hide(): void; onClick(h: Handler): void; offClick(h: Handler): void }
@@ -40,15 +41,26 @@ type WebApp = {
   }
 }
 
-export const tg: WebApp | undefined = (
-  window as unknown as { Telegram?: { WebApp?: WebApp } }
-).Telegram?.WebApp
+export const tg: WebApp | undefined = (window as unknown as { Telegram?: { WebApp?: WebApp } })
+  .Telegram?.WebApp
 
 export const inTelegram = Boolean(tg?.initData)
 
 export const palette = {
-  light: { ground: "#FAF9F5", sunken: "#F0EEE6", muted: "#6E6B64", mbBg: "#B4552F", mbFg: "#FFFFFF" },
-  dark: { ground: "#1B1A19", sunken: "#131211", muted: "#A19D94", mbBg: "#D97757", mbFg: "#1B1A19" },
+  light: {
+    ground: "#F7F8FA",
+    sunken: "#EAEDF2",
+    muted: "#5B6472",
+    mbBg: "#1976D2",
+    mbFg: "#FFFFFF",
+  },
+  dark: {
+    ground: "#101317",
+    sunken: "#0A0D10",
+    muted: "#98A3B2",
+    mbBg: "#42A5F5",
+    mbFg: "#101317",
+  },
 } as const
 
 export const applyScheme = (scheme: Scheme) => {

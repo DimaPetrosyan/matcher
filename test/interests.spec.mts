@@ -58,7 +58,9 @@ describe("экран интересов", () => {
     })
 
     expect(labelsOf(keyboard)).not.toContain(ru("buttonNext"))
-    expect(keyboard.inline_keyboard).toHaveLength(4)
+    // Занятия раскладываются по два в ряд; число рядов считаем от справочника,
+    // иначе тест придётся править при каждом новом занятии.
+    expect(keyboard.inline_keyboard).toHaveLength(Math.ceil(catalog.length / 2))
   })
 
   it("с одним выбранным ряд «Дальше» появляется ровно один раз", () => {

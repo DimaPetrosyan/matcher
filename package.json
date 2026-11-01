@@ -14,7 +14,8 @@
     "db:pull": "bunx drizzle-kit pull && mv src/database/schema.ts src/database/schema.mts",
     "web:dev": "bun run --cwd web dev",
     "web:build": "bun run --cwd web build",
-    "web:typecheck": "bun run --cwd web typecheck"
+    "web:typecheck": "bun run --cwd web typecheck",
+    "check:matcher": "bun scripts/checkMatcher.mts"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",

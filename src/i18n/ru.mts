@@ -43,11 +43,15 @@ export const ru = {
   interestBar: "Бар",
   interestRun: "Пробежка",
   interestMovie: "Кино",
-  interestExpo: "Выставки",
+  interestExpo: "Музей",
   interestBike: "Велосипед",
   interestKaraoke: "Караоке",
   interestTennis: "Теннис",
   interestBilliards: "Бильярд",
+  interestWalk: "Прогулка",
+  interestHookah: "Кальян",
+  interestTheatre: "Театр",
+  interestLecture: "Лекции",
 
   availabilityTitle:
     "<b>Шаг 2 из 2 · Когда свободны?</b>\n" +
@@ -81,6 +85,50 @@ export const ru = {
 
   areaStub: "<b>Шаг 3 из 3 · Откуда удобно?</b>\n" + "\n" + "Здесь скоро появится выбор районов.",
 
+  needUsername:
+    "<b>Сначала заведите @username</b>\n" +
+    "\n" +
+    "Без него участники встречи не смогут вам написать: общий чат я создать " +
+    "не могу, а в составе будут только ссылки на людей с @username.\n" +
+    "\n" +
+    "<i>Настройки Telegram → Имя пользователя. Потом вернитесь и нажмите «Поехали».</i>",
+
+  eventInvite:
+    "<b>{interest} · {when}</b>\n" +
+    "\n" +
+    "Нужно от {min} до {max} человек. Кто согласится первым — тот идёт.\n" +
+    "\n" +
+    "<i>Место выбираете сами — я только свожу.</i>",
+
+  eventConfirmed:
+    "<b>Собрались · {interest} · {when}</b>\n" +
+    "\n" +
+    "{members}\n" +
+    "\n" +
+    "<i>Где встретиться — договоритесь сами, я место не выбираю.</i>",
+
+  eventCancelled:
+    "<b>В этот раз не собрались</b>\n" +
+    "\n" +
+    "{interest}, {when} — желающих не хватило. Предложу что-нибудь ещё.",
+
+  eventAnswered: "<b>{interest} · {when}</b>\n" + "\n" + "{status}",
+
+  eventWaiting: "Жду ответа остальных — напишу до {deadline}, когда станет ясно.",
+
+  eventJoined: "<b>{interest} · {when}</b>\n" + "\n" + "{name} тоже идёт. Теперь вас {count}.",
+
+  eventOpen: "Открыть встречу",
+
+  eventGoing: "Иду",
+  eventSkip: "Не в этот раз",
+
+  eventAccepted: "Отлично, вы в деле",
+  eventDeclined: "Понял, в этот раз без вас",
+  eventFull: "Мест уже нет",
+  eventBusy: "Вы уже идёте на другую встречу в это время",
+  eventGone: "Эта встреча уже закрыта",
+
   openMiniApp:
     "<b>Осталось заполнить анкету</b>\n" +
     "\n" +
@@ -97,7 +145,7 @@ export const ru = {
 
   buttonEditProfile: "Изменить анкету",
 
-  menuButton: "Анкета",
+  menuButton: "Календарь",
 
   buttonOpenMiniApp: "Заполнить анкету",
 

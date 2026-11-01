@@ -1,7 +1,11 @@
 import type { Bot } from "grammy"
 import {
   findUserByTgId,
+  acceptEvent,
+  declineEvent,
   listActiveInterests,
+  listUserEvents,
+  refreshUsername,
   loadProfile,
   saveArea,
   saveInterests,
@@ -9,6 +13,7 @@ import {
   type InterestKeyValue,
 } from "../database/index.mts"
 import {
+  announceAnswer,
   announceProfileReady,
   byLabel,
   districts,
@@ -73,8 +78,14 @@ export const authorize = async (
     }
   }
 
+  if (!check.user.username) {
+    return { error: json({ error: "forbidden", kind: "noUsername" }, 403) }
+  }
+
   const user = await findUserByTgId(check.user.tgId)
   if (!user) return { error: json({ error: "notRegistered" }, 403) }
+
+  await refreshUsername(user.id, check.user.username)
 
   return {
     session: { userId: user.id, tgId: check.user.tgId, languageCode: check.user.languageCode },
@@ -213,6 +224,42 @@ export const putArea = async (session: Session, request: Request, bot: Bot) => {
   return getProfile(session)
 }
 
+export const getEvents = async (session: Session) => {
+  const t = translatorFor(session.languageCode)
+  const events = await listUserEvents(session.userId)
+
+  return json({
+    events: events.map(item => ({
+      ...item,
+      label: isInterestKey(item.interestKey)
+        ? t(interestTextKey[item.interestKey])
+        : item.interestKey,
+    })),
+  })
+}
+
+export const answerEvent = async (session: Session, request: Request, bot: Bot) => {
+  const payload = await body(request)
+  if (!payload) return json({ error: "badRequest" }, 400)
+
+  const eventId = typeof payload.eventId === "string" ? payload.eventId : ""
+  const going = payload.going === true
+
+  if (!eventId) return json({ error: "badRequest" }, 400)
+
+  const answer = going
+    ? await acceptEvent(session.userId, eventId)
+    : await declineEvent(session.userId, eventId)
+
+  if (answer.result === "accepted" || answer.result === "declined") {
+    void announceAnswer(bot, session.tgId, eventId, answer).catch((error: unknown) =>
+      console.error(`could not announce answer of ${session.tgId}:`, error),
+    )
+  }
+
+  return json({ result: answer.result }, answer.result === "gone" ? 409 : 200)
+}
+
 export type Route = {
   method: string
   path: string
@@ -221,6 +268,8 @@ export type Route = {
 
 export const routes: Route[] = [
   { method: "GET", path: "/api/profile", handle: session => getProfile(session) },
+  { method: "GET", path: "/api/events", handle: session => getEvents(session) },
+  { method: "PUT", path: "/api/events", handle: answerEvent },
   { method: "PUT", path: "/api/interests", handle: putInterests },
   { method: "PUT", path: "/api/availability", handle: putAvailability },
   { method: "PUT", path: "/api/area", handle: putArea },

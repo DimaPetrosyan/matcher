@@ -35,7 +35,10 @@ export const MainButton = ({ label, kind, scheme, onClick }: Props) => {
 
     button.onClick(call)
 
-    return () => button.offClick(call)
+    return () => {
+      button.offClick(call)
+      button.hide()
+    }
   }, [label, kind, scheme])
 
   if (inTelegram) return null

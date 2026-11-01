@@ -45,11 +45,15 @@ export const en: Dictionary = {
   interestBar: "Bar",
   interestRun: "Running",
   interestMovie: "Cinema",
-  interestExpo: "Exhibitions",
+  interestExpo: "Museum",
   interestBike: "Cycling",
   interestKaraoke: "Karaoke",
   interestTennis: "Tennis",
   interestBilliards: "Billiards",
+  interestWalk: "Walk",
+  interestHookah: "Hookah",
+  interestTheatre: "Theatre",
+  interestLecture: "Talks",
 
   availabilityTitle:
     "<b>Step 2 of 2 · When are you free?</b>\n" +
@@ -84,6 +88,51 @@ export const en: Dictionary = {
   areaStub:
     "<b>Step 3 of 3 · Which areas work?</b>\n" + "\n" + "A list of areas will show up here soon.",
 
+  needUsername:
+    "<b>Set up a @username first</b>\n" +
+    "\n" +
+    "Without it the others cannot message you: I cannot create a group chat, " +
+    "and the roster only links people who have a @username.\n" +
+    "\n" +
+    "<i>Telegram Settings → Username. Then come back and tap “Let’s go”.</i>",
+
+  eventInvite:
+    "<b>{interest} · {when}</b>\n" +
+    "\n" +
+    "From {min} to {max} people needed. First to say yes is in.\n" +
+    "\n" +
+    "<i>You pick the place yourselves — I only bring you together.</i>",
+
+  eventConfirmed:
+    "<b>It is on · {interest} · {when}</b>\n" +
+    "\n" +
+    "{members}\n" +
+    "\n" +
+    "<i>Agree on the place yourselves — I do not pick it.</i>",
+
+  eventCancelled:
+    "<b>Not enough people this time</b>\n" +
+    "\n" +
+    "{interest}, {when} — too few wanted to go. I will suggest something else.",
+
+  eventAnswered: "<b>{interest} · {when}</b>\n" + "\n" + "{status}",
+
+  eventWaiting: "Waiting for the others — I will write by {deadline} once it is clear.",
+
+  eventJoined:
+    "<b>{interest} · {when}</b>\n" + "\n" + "{name} is in too. That makes {count} of you.",
+
+  eventOpen: "Open the meetup",
+
+  eventGoing: "I am in",
+  eventSkip: "Not this time",
+
+  eventAccepted: "Great, you are in",
+  eventDeclined: "Got it, not this time",
+  eventFull: "No places left",
+  eventBusy: "You are already going to another meetup at this time",
+  eventGone: "This meetup is already closed",
+
   openMiniApp:
     "<b>One thing left — your profile</b>\n" +
     "\n" +
@@ -100,7 +149,7 @@ export const en: Dictionary = {
 
   buttonEditProfile: "Edit profile",
 
-  menuButton: "Profile",
+  menuButton: "Calendar",
 
   buttonOpenMiniApp: "Fill in the profile",
 

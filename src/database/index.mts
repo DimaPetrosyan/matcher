@@ -1,6 +1,31 @@
 export { client, db, type Database } from "./client.mts"
 export { setupDb } from "./setupDb.mts"
-export { loadProfile, saveArea, saveInterests, saveSlots, type Profile } from "./profile.mts"
+export {
+  acceptEvent,
+  declineEvent,
+  eventBrief,
+  generateEvents,
+  listUserEvents,
+  markInvitationSent,
+  pendingInvitations,
+  settleDueEvents,
+  timeZone,
+  type Answer,
+  type AnswerResult,
+  type EventBrief,
+  type Invitation,
+  type Member,
+  type UserEvent,
+  type Settled,
+} from "./events.mts"
+export {
+  loadProfile,
+  refreshUsername,
+  saveArea,
+  saveInterests,
+  saveSlots,
+  type Profile,
+} from "./profile.mts"
 export { recordAudit, type AuditType, type Inserter } from "./audit.mts"
 export {
   finishAvailability,
