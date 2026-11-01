@@ -25,6 +25,10 @@ export const interestKey = pgEnum("interest_key", [
   "karaoke",
   "tennis",
   "billiards",
+  "walk",
+  "hookah",
+  "theatre",
+  "lecture",
 ])
 
 export const eventStatus = pgEnum("event_status", ["open", "confirmed", "cancelled"])

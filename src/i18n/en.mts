@@ -45,11 +45,15 @@ export const en: Dictionary = {
   interestBar: "Bar",
   interestRun: "Running",
   interestMovie: "Cinema",
-  interestExpo: "Exhibitions",
+  interestExpo: "Museum",
   interestBike: "Cycling",
   interestKaraoke: "Karaoke",
   interestTennis: "Tennis",
   interestBilliards: "Billiards",
+  interestWalk: "Walk",
+  interestHookah: "Hookah",
+  interestTheatre: "Theatre",
+  interestLecture: "Talks",
 
   availabilityTitle:
     "<b>Step 2 of 2 · When are you free?</b>\n" +

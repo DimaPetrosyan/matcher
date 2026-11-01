@@ -43,11 +43,15 @@ export const ru = {
   interestBar: "Бар",
   interestRun: "Пробежка",
   interestMovie: "Кино",
-  interestExpo: "Выставки",
+  interestExpo: "Музей",
   interestBike: "Велосипед",
   interestKaraoke: "Караоке",
   interestTennis: "Теннис",
   interestBilliards: "Бильярд",
+  interestWalk: "Прогулка",
+  interestHookah: "Кальян",
+  interestTheatre: "Театр",
+  interestLecture: "Лекции",
 
   availabilityTitle:
     "<b>Шаг 2 из 2 · Когда свободны?</b>\n" +

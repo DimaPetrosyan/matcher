@@ -12,6 +12,10 @@ export const interestTextKey: Record<InterestKey, TextKey> = {
   karaoke: "interestKaraoke",
   tennis: "interestTennis",
   billiards: "interestBilliards",
+  walk: "interestWalk",
+  hookah: "interestHookah",
+  theatre: "interestTheatre",
+  lecture: "interestLecture",
 }
 
 export const isInterestKey = (value: string): value is InterestKey =>
